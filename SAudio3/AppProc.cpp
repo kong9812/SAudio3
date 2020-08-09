@@ -73,7 +73,7 @@ void AppProc::Draw(ID3D11RenderTargetView *_renderTargetView)
 {
 	ImGui::Render();
 	deviceContext->OMSetRenderTargets(1, &_renderTargetView, NULL);
-	float clear_color[4] = { 0.45f, 0.55f, 0.60f, 1.00f };
+	float clear_color[4] = { 0.54f, 0.77f, 0.5f, 1 };
 	deviceContext->ClearRenderTargetView(_renderTargetView, clear_color);
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 

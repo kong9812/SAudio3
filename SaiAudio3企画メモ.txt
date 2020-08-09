@@ -31,5 +31,15 @@ WPF
 　　　・WPFを諦める
 　　　・C++ GUI????
 　　　　・why dont DX11+ImGui???
-　・レンダリングツール???
-　・参考:https://qiita.com/takesyhi/items/a0f03447bb893c9ab937
+　・レンダリングツール
+　　・IMGUI+DX11
+　・FFT
+　　・参考:https://qiita.com/takesyhi/items/a0f03447bb893c9ab937
+　・画像
+　　・テクスチャバンク(親クラス)
+　　　・機能
+　　　　・テクスチャローダー
+　　　　・考え中...
+　　　・使い方
+　　　　・ボタン用(継承クラス)
+　　　　・背景・その他用(継承クラス)

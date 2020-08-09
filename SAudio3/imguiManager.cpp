@@ -20,7 +20,7 @@ ImGuiManager::ImGuiManager(HWND hWnd, ID3D11Device *device, ID3D11DeviceContext	
 #endif
 
 	// ダークモード
-	ImGui::StyleColorsDark();
+	ImGui::StyleColorsClassic();
 
 	// [ImGui]win32の初期化
 	if (!ImGui_ImplWin32_Init(hWnd))
@@ -45,7 +45,7 @@ ImGuiManager::ImGuiManager(HWND hWnd, ID3D11Device *device, ID3D11DeviceContext	
 	}
 
 	// ImGuiフラグの初期化
-	showMainPanel	= true;
+	showMainPanel = true;
 	showPlayerPanel = true;
 }
 
@@ -109,39 +109,57 @@ void ImGuiManager::ShowPanel()
 void ImGuiManager::MainPanel()
 {
 	// メインパネル
-	ImGui::SetNextWindowPos(ImVec2(0, 0));
-	if (ImGui::Begin("SAudio3", &showMainPanel,
-		ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar |
-		ImGuiWindowFlags_::ImGuiWindowFlags_NoTitleBar |
-		ImGuiWindowFlags_::ImGuiWindowFlags_NoResize |
-		ImGuiWindowFlags_::ImGuiWindowFlags_NoMove |
-		ImGuiWindowFlags_::ImGuiWindowFlags_NoCollapse |
-		ImGuiWindowFlags_::ImGuiWindowFlags_NoBringToFrontOnFocus))
+	if (showMainPanel)
 	{
-		if (ImGui::BeginMenuBar())
-		{
-			if (ImGui::BeginMenu("File"))
-			{
-				if (ImGui::MenuItem("New"))
-				{
-				}
-				ImGui::EndMenu();
-			}
-			ImGui::EndMenuBar();
-		}
+		ImGui::SetNextWindowBgAlpha(0.7f);
+		ImGui::SetNextWindowPos(ImVec2(0, 0));
+		ImGui::Begin("SAudio3", &showMainPanel,
+			ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar |
+			ImGuiWindowFlags_::ImGuiWindowFlags_NoTitleBar |
+			ImGuiWindowFlags_::ImGuiWindowFlags_NoResize |
+			ImGuiWindowFlags_::ImGuiWindowFlags_NoMove |
+			ImGuiWindowFlags_::ImGuiWindowFlags_NoCollapse |
+			ImGuiWindowFlags_::ImGuiWindowFlags_NoBringToFrontOnFocus);
 
-		//フレームレートを表示
+		// メニューバー
+		MenuBar();
+
+		// テスト文字の表示
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-	
+
 		// ドッキング
-		ImGuiID dockspaceID = ImGui::GetID("HUB_DockSpace");
-		ImGui::DockSpace(dockspaceID, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None /*|ImGuiDockNodeFlags_NoResize*/);
-		//ImGui::SetNextWindowDockID(dockspaceID, ImGuiCond_Always);
+		ImGuiID dockspaceID = ImGui::GetID("MainPanelDockSpace");
+		ImGui::DockSpace(dockspaceID, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
+		ImGui::End();
+
 	}
-	ImGui::End();
 
 	// 再生パネル
 	PlayerPanel();
+}
+
+//===================================================================================================================================
+// メニューバー
+//===================================================================================================================================
+void ImGuiManager::MenuBar()
+{
+	if (ImGui::BeginMenuBar())
+	{
+		// ファイル操作
+		if (ImGui::BeginMenu("File"))
+		{
+			if (ImGui::MenuItem("New")){}
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu("Window"))
+		{
+			ImGui::MenuItem("Player", "", &showPlayerPanel);
+			ImGui::EndMenu();
+		}
+
+		ImGui::EndMenuBar();
+	}
 }
 
 //===================================================================================================================================
@@ -149,11 +167,14 @@ void ImGuiManager::MainPanel()
 //===================================================================================================================================
 void ImGuiManager::PlayerPanel()
 {
-	// メインパネル
-	if (ImGui::Begin("Player Panel"/*, (bool *)true, ImGuiWindowFlags_::ImGuiWindowFlags_NoTitleBar*/))
+	// 再生パネル
+	if (showPlayerPanel)
 	{
-		//フレームレートを表示
+		ImGui::Begin("Player Panel", &showPlayerPanel, ImGuiWindowFlags_::ImGuiWindowFlags_NoTitleBar);
+
+		// テスト文字の表示
 		ImGui::Text("player");
+
+		ImGui::End();
 	}
-	ImGui::End();
 }

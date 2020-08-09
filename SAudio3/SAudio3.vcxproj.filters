@@ -35,6 +35,15 @@
     <Filter Include="ソース ファイル\ImGui\ImGuiManager">
       <UniqueIdentifier>{94c25e89-85ae-497a-9105-6ca7342b613f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Texture">
+      <UniqueIdentifier>{c48238a2-45d4-41e3-affb-dec466840ffa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Texture\ButtonTexture">
+      <UniqueIdentifier>{7e7e2ea1-b064-4619-9dfa-465bf79d24fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Texture\TextureBase">
+      <UniqueIdentifier>{876b87d7-814e-4fc6-b084-83f9806ade49}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Directx11.h">
@@ -100,6 +109,9 @@
     <ClInclude Include="ImguiManager.h">
       <Filter>ソース ファイル\ImGui\ImGuiManager</Filter>
     </ClInclude>
+    <ClInclude Include="TextureBase.h">
+      <Filter>ソース ファイル\Texture\TextureBase</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Directx11.cpp">
@@ -152,6 +164,9 @@
     </ClCompile>
     <ClCompile Include="ImguiManager.cpp">
       <Filter>ソース ファイル\ImGui\ImGuiManager</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureBase.cpp">
+      <Filter>ソース ファイル\Texture\TextureBase</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

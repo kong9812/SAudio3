@@ -4,7 +4,7 @@
 //===================================================================================================================================
 #include "Main.h"
 #include <D3D11.h>
-#include <D3DX11.h> // see!
+#include <D3DX11.h>
 #include <D3D11.h>
 #include <directxmath.h>
 #include <D3Dcompiler.h>
