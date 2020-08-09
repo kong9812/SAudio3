@@ -26,35 +26,17 @@
     <Filter Include="ソース ファイル\SoundCore">
       <UniqueIdentifier>{39928a45-c648-4414-8223-fba9edf733b2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\ImGui\Normal">
+      <UniqueIdentifier>{3eea9c39-da05-41ec-9569-0f5f941aabb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\ImGui\Docking">
+      <UniqueIdentifier>{19e5550b-2856-4cb7-a409-081c5cff851e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\ImGui\ImGuiManager">
+      <UniqueIdentifier>{94c25e89-85ae-497a-9105-6ca7342b613f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="imGui\imconfig.h">
-      <Filter>ソース ファイル\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="imGui\imgui.h">
-      <Filter>ソース ファイル\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="imGui\imgui_internal.h">
-      <Filter>ソース ファイル\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="imGui\imstb_rectpack.h">
-      <Filter>ソース ファイル\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="imGui\imstb_textedit.h">
-      <Filter>ソース ファイル\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="imGui\imstb_truetype.h">
-      <Filter>ソース ファイル\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGui\imgui_impl_win32.h">
-      <Filter>ソース ファイル\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGui\imgui_impl_dx11.h">
-      <Filter>ソース ファイル\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="imguiManager.h">
-      <Filter>ソース ファイル\ImGui</Filter>
-    </ClInclude>
     <ClInclude Include="Directx11.h">
       <Filter>ソース ファイル\Main\Directx11</Filter>
     </ClInclude>
@@ -67,29 +49,59 @@
     <ClInclude Include="AppProc.h">
       <Filter>ソース ファイル\Main\AppProc</Filter>
     </ClInclude>
+    <ClInclude Include="ImGui\docking\imgui.h">
+      <Filter>ソース ファイル\ImGui\Docking</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\docking\imgui_impl_dx11.h">
+      <Filter>ソース ファイル\ImGui\Docking</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\docking\imgui_impl_win32.h">
+      <Filter>ソース ファイル\ImGui\Docking</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\docking\imgui_internal.h">
+      <Filter>ソース ファイル\ImGui\Docking</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\docking\imstb_rectpack.h">
+      <Filter>ソース ファイル\ImGui\Docking</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\docking\imstb_textedit.h">
+      <Filter>ソース ファイル\ImGui\Docking</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\docking\imstb_truetype.h">
+      <Filter>ソース ファイル\ImGui\Docking</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\docking\imconfig.h">
+      <Filter>ソース ファイル\ImGui\Docking</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imconfig.h">
+      <Filter>ソース ファイル\ImGui\Normal</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imgui.h">
+      <Filter>ソース ファイル\ImGui\Normal</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imgui_impl_dx11.h">
+      <Filter>ソース ファイル\ImGui\Normal</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imgui_impl_win32.h">
+      <Filter>ソース ファイル\ImGui\Normal</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imgui_internal.h">
+      <Filter>ソース ファイル\ImGui\Normal</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imstb_rectpack.h">
+      <Filter>ソース ファイル\ImGui\Normal</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imstb_textedit.h">
+      <Filter>ソース ファイル\ImGui\Normal</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imstb_truetype.h">
+      <Filter>ソース ファイル\ImGui\Normal</Filter>
+    </ClInclude>
+    <ClInclude Include="ImguiManager.h">
+      <Filter>ソース ファイル\ImGui\ImGuiManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="imGui\imgui.cpp">
-      <Filter>ソース ファイル\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="imGui\imgui_demo.cpp">
-      <Filter>ソース ファイル\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="imGui\imgui_draw.cpp">
-      <Filter>ソース ファイル\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="imGui\imgui_widgets.cpp">
-      <Filter>ソース ファイル\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="ImGui\imgui_impl_win32.cpp">
-      <Filter>ソース ファイル\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="ImGui\imgui_impl_dx11.cpp">
-      <Filter>ソース ファイル\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="imguiManager.cpp">
-      <Filter>ソース ファイル\ImGui</Filter>
-    </ClCompile>
     <ClCompile Include="Directx11.cpp">
       <Filter>ソース ファイル\Main\Directx11</Filter>
     </ClCompile>
@@ -101,6 +113,45 @@
     </ClCompile>
     <ClCompile Include="AppProc.cpp">
       <Filter>ソース ファイル\Main\AppProc</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\docking\imgui.cpp">
+      <Filter>ソース ファイル\ImGui\Docking</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\docking\imgui_demo.cpp">
+      <Filter>ソース ファイル\ImGui\Docking</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\docking\imgui_draw.cpp">
+      <Filter>ソース ファイル\ImGui\Docking</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\docking\imgui_impl_dx11.cpp">
+      <Filter>ソース ファイル\ImGui\Docking</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\docking\imgui_impl_win32.cpp">
+      <Filter>ソース ファイル\ImGui\Docking</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\docking\imgui_widgets.cpp">
+      <Filter>ソース ファイル\ImGui\Docking</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui.cpp">
+      <Filter>ソース ファイル\ImGui\Normal</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_demo.cpp">
+      <Filter>ソース ファイル\ImGui\Normal</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_draw.cpp">
+      <Filter>ソース ファイル\ImGui\Normal</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_impl_dx11.cpp">
+      <Filter>ソース ファイル\ImGui\Normal</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_impl_win32.cpp">
+      <Filter>ソース ファイル\ImGui\Normal</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_widgets.cpp">
+      <Filter>ソース ファイル\ImGui\Normal</Filter>
+    </ClCompile>
+    <ClCompile Include="ImguiManager.cpp">
+      <Filter>ソース ファイル\ImGui\ImGuiManager</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

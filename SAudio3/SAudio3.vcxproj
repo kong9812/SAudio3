@@ -136,13 +136,19 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Directx11.cpp" />
-    <ClCompile Include="imguiManager.cpp" />
-    <ClCompile Include="imGui\imgui.cpp" />
-    <ClCompile Include="imGui\imgui_demo.cpp" />
-    <ClCompile Include="imGui\imgui_draw.cpp" />
+    <ClCompile Include="ImguiManager.cpp" />
+    <ClCompile Include="ImGui\docking\imgui.cpp" />
+    <ClCompile Include="ImGui\docking\imgui_demo.cpp" />
+    <ClCompile Include="ImGui\docking\imgui_draw.cpp" />
+    <ClCompile Include="ImGui\docking\imgui_impl_dx11.cpp" />
+    <ClCompile Include="ImGui\docking\imgui_impl_win32.cpp" />
+    <ClCompile Include="ImGui\docking\imgui_widgets.cpp" />
+    <ClCompile Include="ImGui\imgui.cpp" />
+    <ClCompile Include="ImGui\imgui_demo.cpp" />
+    <ClCompile Include="ImGui\imgui_draw.cpp" />
     <ClCompile Include="ImGui\imgui_impl_dx11.cpp" />
     <ClCompile Include="ImGui\imgui_impl_win32.cpp" />
-    <ClCompile Include="imGui\imgui_widgets.cpp" />
+    <ClCompile Include="ImGui\imgui_widgets.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="AppProc.cpp" />
     <ClCompile Include="Window.cpp" />
@@ -150,15 +156,23 @@
   <ItemGroup>
     <ClInclude Include="Directx11.h" />
     <ClInclude Include="AppProc.h" />
-    <ClInclude Include="imguiManager.h" />
-    <ClInclude Include="imGui\imconfig.h" />
-    <ClInclude Include="imGui\imgui.h" />
+    <ClInclude Include="ImguiManager.h" />
+    <ClInclude Include="ImGui\docking\imconfig.h" />
+    <ClInclude Include="ImGui\docking\imgui.h" />
+    <ClInclude Include="ImGui\docking\imgui_impl_dx11.h" />
+    <ClInclude Include="ImGui\docking\imgui_impl_win32.h" />
+    <ClInclude Include="ImGui\docking\imgui_internal.h" />
+    <ClInclude Include="ImGui\docking\imstb_rectpack.h" />
+    <ClInclude Include="ImGui\docking\imstb_textedit.h" />
+    <ClInclude Include="ImGui\docking\imstb_truetype.h" />
+    <ClInclude Include="ImGui\imconfig.h" />
+    <ClInclude Include="ImGui\imgui.h" />
     <ClInclude Include="ImGui\imgui_impl_dx11.h" />
     <ClInclude Include="ImGui\imgui_impl_win32.h" />
-    <ClInclude Include="imGui\imgui_internal.h" />
-    <ClInclude Include="imGui\imstb_rectpack.h" />
-    <ClInclude Include="imGui\imstb_textedit.h" />
-    <ClInclude Include="imGui\imstb_truetype.h" />
+    <ClInclude Include="ImGui\imgui_internal.h" />
+    <ClInclude Include="ImGui\imstb_rectpack.h" />
+    <ClInclude Include="ImGui\imstb_textedit.h" />
+    <ClInclude Include="ImGui\imstb_truetype.h" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>

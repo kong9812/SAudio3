@@ -64,8 +64,8 @@ HRESULT Window::Init(HINSTANCE hInstance)
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT,
 		0,
-		852,
-		480,
+		windowNS::WINDOW_WIDTH,
+		windowNS::WINDOW_HEIGHT,
 		NULL,
 		NULL,
 		hInstance,
@@ -84,6 +84,7 @@ LRESULT CALLBACK Window::WndProc(HWND hWnd, UINT message, WPARAM _wParam, LPARAM
 	if (ImGui_ImplWin32_WndProcHandler(hWnd, message, _wParam, _lParam))
 		return true;
 
+
 	switch (message)
 	{
 	case WM_DESTROY:
@@ -96,6 +97,7 @@ LRESULT CALLBACK Window::WndProc(HWND hWnd, UINT message, WPARAM _wParam, LPARAM
 		}
 		break;
 	case WM_SIZE:
+		// リサイズデータ
 		reSizeFlg = true;
 		wParam = _wParam;
 		lParam = _lParam;

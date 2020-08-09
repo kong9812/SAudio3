@@ -60,6 +60,17 @@ WPARAM MessageLoop(Window *window, MSG msg)
 	// メッセージループ
 	while (true)
 	{
+		// リサイズ
+		if (window->GetReSizeFlg() == true)
+		{
+			if (directX11->GetDevice() != NULL && window->GetwParam() != SIZE_MINIMIZED)
+			{
+				directX11->ReSize(window->GetlParam());
+				window->SetReSizeFlg(false);
+				appProc->ReSize(true);
+			}
+		}
+
 		// メッセージ解析
 		if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
 		{
@@ -72,18 +83,8 @@ WPARAM MessageLoop(Window *window, MSG msg)
 		}
 		else
 		{
-			appProc->Update();	// 更新処理
+			appProc->Update(hWnd);	// 更新処理
 			appProc->Draw(directX11->GetRenderTargetView());	// 描画処理
-		}
-
-		// リサイズ
-		if (window->GetReSizeFlg() == true)
-		{
-			if (directX11->GetDevice() != NULL && window->GetwParam() != SIZE_MINIMIZED)
-			{
-				directX11->ReSize(window->GetlParam());
-				window->SetReSizeFlg(false);
-			}
 		}
 	}
 

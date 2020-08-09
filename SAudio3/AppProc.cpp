@@ -35,13 +35,35 @@ AppProc::~AppProc()
 //===================================================================================================================================
 // 更新処理
 //===================================================================================================================================
-void AppProc::Update()
+void AppProc::Update(HWND hWnd)
 {
 	// [ImGui]新しいフレームの作成
 	imGuiManager->CreateNewFrame();
 		
-	// [ImGui]テスト
-	imGuiManager->test();
+	// [ImGui]メインパネル
+	if (reSizeFlg)
+	{
+		RECT rect;
+		// ウインドサイズ(描画できる部分)の取得
+		if (GetClientRect(hWnd, &rect))
+		{
+			imGuiManager->ShowPanel(true, rect);
+		}
+		reSizeFlg = false;
+	}
+	else
+	{
+		imGuiManager->ShowPanel();
+	}
+}
+
+//===================================================================================================================================
+// リサイズ
+//===================================================================================================================================
+void AppProc::ReSize(bool _reSizeFlg)
+{
+	// ImGuiのリサイズフラグ
+	reSizeFlg =_reSizeFlg;
 }
 
 //===================================================================================================================================
@@ -55,5 +77,5 @@ void AppProc::Draw(ID3D11RenderTargetView *_renderTargetView)
 	deviceContext->ClearRenderTargetView(_renderTargetView, clear_color);
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
-	swapChain->Present(1, 0);
+	swapChain->Present(1,0);
 }

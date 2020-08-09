@@ -1,3 +1,6 @@
+//===================================================================================================================================
+// インクルード
+//===================================================================================================================================
 #include "imguiManager.h"
 
 //===================================================================================================================================
@@ -11,6 +14,10 @@ ImGuiManager::ImGuiManager(HWND hWnd, ID3D11Device *device, ID3D11DeviceContext	
 	// [ImGui]コンテクストの作成
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+#if USE_IMGUI_DOCKING
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;		// ドッキングの使用許可
+#endif
 
 	// ダークモード
 	ImGui::StyleColorsDark();
@@ -38,7 +45,8 @@ ImGuiManager::ImGuiManager(HWND hWnd, ID3D11Device *device, ID3D11DeviceContext	
 	}
 
 	// ImGuiフラグの初期化
-	showSample = true;
+	showMainPanel	= true;
+	showPlayerPanel = true;
 }
 
 //===================================================================================================================================
@@ -63,13 +71,89 @@ ImGuiManager::~ImGuiManager()
 }
 
 //===================================================================================================================================
-// [ImGui]テスト
+// [ImGui]リサイズ
 //===================================================================================================================================
-void ImGuiManager::test()
+void ImGuiManager::ReSize(LONG right, LONG bottom)
 {
-	// サンプルUI
-	if (showSample)
-		ImGui::ShowDemoWindow(&showSample);
+	ImGui::SetNextWindowPos(ImVec2(0, 0));
+	ImGui::SetNextWindowSize(ImVec2(right, bottom));
+}
 
+//===================================================================================================================================
+// [ImGui]メインパネル(リサイズ)
+//===================================================================================================================================
+void ImGuiManager::ShowPanel(bool reSize, RECT mainPanelSize)
+{
+	// リサイズ
+	if (reSize)
+	{
+		ReSize(mainPanelSize.right, mainPanelSize.bottom);
+	}
+
+	// メインパネル
+	MainPanel();
+}
+
+//===================================================================================================================================
+// [ImGui]メインパネル
+//===================================================================================================================================
+void ImGuiManager::ShowPanel()
+{
+	// メインパネル
+	MainPanel();
+}
+
+//===================================================================================================================================
+// メインパネル
+//===================================================================================================================================
+void ImGuiManager::MainPanel()
+{
+	// メインパネル
+	ImGui::SetNextWindowPos(ImVec2(0, 0));
+	if (ImGui::Begin("SAudio3", &showMainPanel,
+		ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar |
+		ImGuiWindowFlags_::ImGuiWindowFlags_NoTitleBar |
+		ImGuiWindowFlags_::ImGuiWindowFlags_NoResize |
+		ImGuiWindowFlags_::ImGuiWindowFlags_NoMove |
+		ImGuiWindowFlags_::ImGuiWindowFlags_NoCollapse |
+		ImGuiWindowFlags_::ImGuiWindowFlags_NoBringToFrontOnFocus))
+	{
+		if (ImGui::BeginMenuBar())
+		{
+			if (ImGui::BeginMenu("File"))
+			{
+				if (ImGui::MenuItem("New"))
+				{
+				}
+				ImGui::EndMenu();
+			}
+			ImGui::EndMenuBar();
+		}
+
+		//フレームレートを表示
+		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	
+		// ドッキング
+		ImGuiID dockspaceID = ImGui::GetID("HUB_DockSpace");
+		ImGui::DockSpace(dockspaceID, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None /*|ImGuiDockNodeFlags_NoResize*/);
+		//ImGui::SetNextWindowDockID(dockspaceID, ImGuiCond_Always);
+	}
+	ImGui::End();
+
+	// 再生パネル
+	PlayerPanel();
+}
+
+//===================================================================================================================================
+// 再生パネル
+//===================================================================================================================================
+void ImGuiManager::PlayerPanel()
+{
+	// メインパネル
+	if (ImGui::Begin("Player Panel"/*, (bool *)true, ImGuiWindowFlags_::ImGuiWindowFlags_NoTitleBar*/))
+	{
+		//フレームレートを表示
+		ImGui::Text("player");
+	}
+	ImGui::End();
 }

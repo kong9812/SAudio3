@@ -15,8 +15,14 @@ public:
 	AppProc(HWND hWnd, ID3D11Device *device, ID3D11DeviceContext *deviceContext, IDXGISwapChain *swapChain, ID3D11RenderTargetView*renderTargetView);
 	~AppProc();
 
-	void Update();
+	// 更新処理
+	void Update(HWND hWnd);
+	
+	// 描画処理
 	void Draw(ID3D11RenderTargetView *renderTargetView);
+
+	// リサイズ
+	void ReSize(bool reSizeFlg);
 
 private:
 	IDXGISwapChain			*swapChain;			// IDXGISwapChain構造体
@@ -24,5 +30,6 @@ private:
 	ID3D11DeviceContext		*deviceContext;		// デバイスコンテクスト
 	ID3D11RenderTargetView	*renderTargetView;	// View(ビュー)
 
-	ImGuiManager *imGuiManager;	// ImGuiマネージャー
+	ImGuiManager			*imGuiManager;		// ImGuiマネージャー
+	bool					reSizeFlg;			// メインパネルのリサイズフラグ
 };

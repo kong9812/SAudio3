@@ -5,9 +5,20 @@
 #include "Main.h"
 #include "Directx11.h"
 
+//===================================================================================================================================
+// ビルドスイッチ
+//===================================================================================================================================
+// ドッキングの使用状況
+#define USE_IMGUI_DOCKING (true)
+#if USE_IMGUI_DOCKING
+#include "imGui/docking/imgui.h"
+#include "imGui/docking/imgui_impl_win32.h"
+#include "imGui/docking/imgui_impl_dx11.h"
+#else
 #include "imGui/imgui.h"
 #include "imGui/imgui_impl_win32.h"
 #include "imGui/imgui_impl_dx11.h"
+#endif
 
 //===================================================================================================================================
 // クラス
@@ -21,10 +32,21 @@ public:
 	// [ImGui]新しいフレームの作成
 	void CreateNewFrame();
 
-	// [ImGui]テスト
-	void test();
+	// [ImGui]パネルの表示
+	void ShowPanel(bool reSize, RECT mainPanelSize);
+	void ShowPanel();
 
 private:
-	bool showSample;	// [ImGuiフラグ]サンプルUI
 
+	bool showMainPanel;		// [ImGuiフラグ]メインパネル
+	bool showPlayerPanel;	// [ImGuiフラグ]再生パネル
+
+	// [ImGui]リサイズ
+	void ReSize(LONG right, LONG bottom);
+
+	// メインパネル
+	void MainPanel();
+
+	// 再生パネル
+	void PlayerPanel();
 };
