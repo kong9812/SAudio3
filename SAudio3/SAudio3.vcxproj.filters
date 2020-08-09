@@ -5,13 +5,102 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="ヘッダー ファイル">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    <Filter Include="ソース ファイル\ImGui">
+      <UniqueIdentifier>{697ef696-de20-4064-85d4-30bfbe5f556d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="リソース ファイル">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="ソース ファイル\Main">
+      <UniqueIdentifier>{a43ee6bd-2ad7-4ee2-bab4-d2d680cac9cd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Main\Directx11">
+      <UniqueIdentifier>{0e9ccbcc-b0fe-415d-8204-c2b1421b9955}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Main\Main">
+      <UniqueIdentifier>{68e3c89e-80bf-4257-a29e-2ff0d160d16b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Main\Window">
+      <UniqueIdentifier>{89827c2b-732d-447f-9ff8-25adb14f19ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Main\AppProc">
+      <UniqueIdentifier>{0e0d584d-26d7-430c-8557-134f3557ca7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\SoundCore">
+      <UniqueIdentifier>{39928a45-c648-4414-8223-fba9edf733b2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="imGui\imconfig.h">
+      <Filter>ソース ファイル\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="imGui\imgui.h">
+      <Filter>ソース ファイル\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="imGui\imgui_internal.h">
+      <Filter>ソース ファイル\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="imGui\imstb_rectpack.h">
+      <Filter>ソース ファイル\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="imGui\imstb_textedit.h">
+      <Filter>ソース ファイル\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="imGui\imstb_truetype.h">
+      <Filter>ソース ファイル\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imgui_impl_win32.h">
+      <Filter>ソース ファイル\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imgui_impl_dx11.h">
+      <Filter>ソース ファイル\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="imguiManager.h">
+      <Filter>ソース ファイル\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Directx11.h">
+      <Filter>ソース ファイル\Main\Directx11</Filter>
+    </ClInclude>
+    <ClInclude Include="Main.h">
+      <Filter>ソース ファイル\Main\Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>ソース ファイル\Main\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="AppProc.h">
+      <Filter>ソース ファイル\Main\AppProc</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="imGui\imgui.cpp">
+      <Filter>ソース ファイル\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="imGui\imgui_demo.cpp">
+      <Filter>ソース ファイル\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="imGui\imgui_draw.cpp">
+      <Filter>ソース ファイル\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="imGui\imgui_widgets.cpp">
+      <Filter>ソース ファイル\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_impl_win32.cpp">
+      <Filter>ソース ファイル\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_impl_dx11.cpp">
+      <Filter>ソース ファイル\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="imguiManager.cpp">
+      <Filter>ソース ファイル\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Directx11.cpp">
+      <Filter>ソース ファイル\Main\Directx11</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>ソース ファイル\Main\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>ソース ファイル\Main\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="AppProc.cpp">
+      <Filter>ソース ファイル\Main\AppProc</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
