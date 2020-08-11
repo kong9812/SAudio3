@@ -151,12 +151,16 @@
     <ClCompile Include="ImGui\imgui_widgets.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="AppProc.cpp" />
+    <ClCompile Include="SoundBase.cpp" />
+    <ClCompile Include="XAudio2Manager.cpp" />
     <ClCompile Include="TextureBase.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Directx11.h" />
     <ClInclude Include="AppProc.h" />
+    <ClInclude Include="SoundBase.h" />
+    <ClInclude Include="XAudio2Manager.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="TextureBase.h" />
     <ClInclude Include="ImguiManager.h" />

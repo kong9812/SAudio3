@@ -38,14 +38,17 @@
     <Filter Include="ソース ファイル\Texture">
       <UniqueIdentifier>{c48238a2-45d4-41e3-affb-dec466840ffa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\Texture\ButtonTexture">
-      <UniqueIdentifier>{7e7e2ea1-b064-4619-9dfa-465bf79d24fa}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\Texture\TextureBase">
       <UniqueIdentifier>{876b87d7-814e-4fc6-b084-83f9806ade49}</UniqueIdentifier>
     </Filter>
     <Filter Include="ソース ファイル\stb">
       <UniqueIdentifier>{4daa2ab5-c772-4f93-b04b-f3794efbb4cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\SoundCore\XAudio2">
+      <UniqueIdentifier>{cc8c7b6d-53a0-4ff2-82f6-454f7c491c33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\SoundCore\SoundBase">
+      <UniqueIdentifier>{d2ff687e-da9c-4684-a88e-c076a8450b0f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -118,6 +121,12 @@
     <ClInclude Include="stb_image.h">
       <Filter>ソース ファイル\stb</Filter>
     </ClInclude>
+    <ClInclude Include="XAudio2Manager.h">
+      <Filter>ソース ファイル\SoundCore\XAudio2</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundBase.h">
+      <Filter>ソース ファイル\SoundCore\SoundBase</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Directx11.cpp">
@@ -173,6 +182,12 @@
     </ClCompile>
     <ClCompile Include="TextureBase.cpp">
       <Filter>ソース ファイル\Texture\TextureBase</Filter>
+    </ClCompile>
+    <ClCompile Include="XAudio2Manager.cpp">
+      <Filter>ソース ファイル\SoundCore\XAudio2</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundBase.cpp">
+      <Filter>ソース ファイル\SoundCore\SoundBase</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
