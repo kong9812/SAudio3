@@ -1,8 +1,9 @@
+#pragma once
 //===================================================================================================================================
 // インクルード
 //===================================================================================================================================
-#pragma once
 #include "Main.h"
+#include "Window.h"
 #include "Directx11.h"
 
 //===================================================================================================================================
@@ -11,11 +12,15 @@
 class TextureBase
 {
 public:
-	TextureBase() {};
-	~TextureBase() {};
+	TextureBase(ID3D11Device *device);
+	~TextureBase();
+
+	// シェーダーリソースの取り出し
+	ID3D11ShaderResourceView* GetShaderResource(char *fileName);
 
 protected:
-	// 画像ファイル
-	//chat *
+	std::map<std::string, ID3D11ShaderResourceView*> shaderResource;	// [連想配列]シェーダーリソース
 
+	// テクスチャローダー
+	bool LoadTexture(ID3D11Device *device, const char *path, ID3D11ShaderResourceView **shaderResource);
 };

@@ -5,6 +5,7 @@
 #include "Main.h"
 #include "Directx11.h"
 #include "imguiManager.h"
+#include "TextureBase.h"
 
 //===================================================================================================================================
 // クラス
@@ -31,5 +32,7 @@ private:
 	ID3D11RenderTargetView	*renderTargetView;	// View(ビュー)
 
 	ImGuiManager			*imGuiManager;		// ImGuiマネージャー
+	TextureBase				*textureBase;		// テクスチャベース
+
 	bool					reSizeFlg;			// メインパネルのリサイズフラグ
 };

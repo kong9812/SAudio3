@@ -19,8 +19,8 @@ AppProc::AppProc(HWND hWnd,
 	renderTargetView	= _renderTargetView;
 
 	// ‰Šú‰»
-	imGuiManager = new ImGuiManager(hWnd, _device, _deviceContext);
-
+	textureBase = new TextureBase(device);
+	imGuiManager = new ImGuiManager(hWnd, _device, _deviceContext, textureBase);
 }
 
 //===================================================================================================================================
@@ -30,6 +30,7 @@ AppProc::~AppProc()
 {
 	// I—¹ˆ—
 	SAFE_DELETE(imGuiManager)
+	SAFE_DELETE(textureBase)
 }
 
 //===================================================================================================================================
@@ -73,8 +74,7 @@ void AppProc::Draw(ID3D11RenderTargetView *_renderTargetView)
 {
 	ImGui::Render();
 	deviceContext->OMSetRenderTargets(1, &_renderTargetView, NULL);
-	float clear_color[4] = { 0.54f, 0.77f, 0.5f, 1 };
-	deviceContext->ClearRenderTargetView(_renderTargetView, clear_color);
+	deviceContext->ClearRenderTargetView(_renderTargetView, directX11NS::clear);
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
 	swapChain->Present(1,0);

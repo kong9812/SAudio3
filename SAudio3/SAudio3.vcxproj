@@ -157,6 +157,7 @@
   <ItemGroup>
     <ClInclude Include="Directx11.h" />
     <ClInclude Include="AppProc.h" />
+    <ClInclude Include="stb_image.h" />
     <ClInclude Include="TextureBase.h" />
     <ClInclude Include="ImguiManager.h" />
     <ClInclude Include="ImGui\docking\imconfig.h" />

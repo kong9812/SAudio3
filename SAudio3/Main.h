@@ -7,13 +7,22 @@
 #include <crtdbg.h>
 #include <windows.h>
 #include <thread>
+#include <map>
 
 #pragma comment(lib,"winmm.lib")
 
+//===================================================================================================================================
+// 警告無効化
+//===================================================================================================================================
 #pragma warning(disable:4305)
 #pragma warning(disable:4996)
 #pragma warning(disable:4018)
 #pragma warning(disable:4111)
+
+//===================================================================================================================================
+// ライブラリフラグ
+//===================================================================================================================================
+#define STB_IMAGE_IMPLEMENTATION
 
 //===================================================================================================================================
 // マクロ定義
@@ -28,8 +37,9 @@
 //===================================================================================================================================
 namespace errorNS
 {
-	const LPCSTR DXInitError			= "DirectX11 Error(Init)";	// [DirectX11]初期化失敗
-	const LPCSTR ImGuiInitError			= "ImGui Error(Init)";		// [ImGui]初期化失敗
-	const LPCSTR ImGuiWin32InitError	= "ImGui Error(Init Win32)";// [ImGui]Win32初期化失敗
-
+	const LPCSTR DXInitError				= "DirectX11 Error(Init)";					// [DirectX11]初期化失敗
+	const LPCSTR ImShaderResourceError		= "CreateShaderResourceView Failed";		// [DirectX11]作成失敗(ID3D11ShaderResourceView)
+	const LPCSTR ImGuiInitError				= "ImGui Error(Init)";						// [ImGui]初期化失敗
+	const LPCSTR ImGuiWin32InitError		= "ImGui Error(Init Win32)";				// [ImGui]初期化失敗(Win32)
+	const LPCSTR ImGuiTextureImportError	= "Texture Not Found";						// [Texture]テクスチャが存在しない
 }

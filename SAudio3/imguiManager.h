@@ -4,6 +4,7 @@
 //===================================================================================================================================
 #include "Main.h"
 #include "Directx11.h"
+#include "TextureBase.h"
 
 //===================================================================================================================================
 // ビルドスイッチ
@@ -22,12 +23,20 @@
 #endif
 
 //===================================================================================================================================
+// 定数定義
+//===================================================================================================================================
+namespace imGuiManagerNS
+{
+	extern ImVec2 buttonSize;
+}
+
+//===================================================================================================================================
 // クラス
 //===================================================================================================================================
 class ImGuiManager
 {
 public:
-	ImGuiManager(HWND hWnd, ID3D11Device *device, ID3D11DeviceContext *deviceContext);
+	ImGuiManager(HWND hWnd, ID3D11Device *device, ID3D11DeviceContext *deviceContext, TextureBase *textureBase);
 	~ImGuiManager();
 
 	// [ImGui]新しいフレームの作成
@@ -38,9 +47,12 @@ public:
 	void ShowPanel();
 
 private:
+	TextureBase *textureBase;	// テクスチャベース
 
-	bool showMainPanel;		// [ImGuiフラグ]メインパネル
-	bool showPlayerPanel;	// [ImGuiフラグ]再生パネル
+	bool showMainPanel;			// [ImGuiフラグ]メインパネル
+	bool showPlayerPanel;		// [ImGuiフラグ]再生パネル
+
+	bool isPlaying;				// [プレイヤーパネル]再生中??
 
 	// [ImGui]リサイズ
 	void ReSize(LONG right, LONG bottom);
@@ -53,4 +65,6 @@ private:
 
 	// 再生パネル
 	void PlayerPanel();
+
+
 };

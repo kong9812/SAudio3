@@ -4,9 +4,14 @@
 #include "imguiManager.h"
 
 //===================================================================================================================================
+// 定数定義(多重定義対策)
+//===================================================================================================================================
+ImVec2 imGuiManagerNS::buttonSize = ImVec2(25, 25);
+
+//===================================================================================================================================
 // コンストラクタ
 //===================================================================================================================================
-ImGuiManager::ImGuiManager(HWND hWnd, ID3D11Device *device, ID3D11DeviceContext	*deviceContext)
+ImGuiManager::ImGuiManager(HWND hWnd, ID3D11Device *device, ID3D11DeviceContext	*deviceContext, TextureBase *_textureBase)
 {
 	// バージョンチェック
 	IMGUI_CHECKVERSION();
@@ -47,6 +52,10 @@ ImGuiManager::ImGuiManager(HWND hWnd, ID3D11Device *device, ID3D11DeviceContext	
 	// ImGuiフラグの初期化
 	showMainPanel = true;
 	showPlayerPanel = true;
+	isPlaying = false;
+
+	// テクスチャベース
+	textureBase = _textureBase;
 }
 
 //===================================================================================================================================
@@ -175,6 +184,25 @@ void ImGuiManager::PlayerPanel()
 		// テスト文字の表示
 		ImGui::Text("player");
 
+		if (!isPlaying)
+		{	// 再生ボタン
+			if (ImGui::ImageButton((void*)textureBase->GetShaderResource((char *)"playButton.png"), imGuiManagerNS::buttonSize))
+			{
+				// 再生
+
+				isPlaying = true;
+			}
+		}
+		else
+		{
+			// 一時停止ボタン
+			if (ImGui::ImageButton((void*)textureBase->GetShaderResource((char *)"pauseButton.png"), imGuiManagerNS::buttonSize))
+			{
+				// 一時停止
+
+				isPlaying = false;
+			}
+		}
 		ImGui::End();
 	}
 }

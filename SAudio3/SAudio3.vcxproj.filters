@@ -44,6 +44,9 @@
     <Filter Include="ソース ファイル\Texture\TextureBase">
       <UniqueIdentifier>{876b87d7-814e-4fc6-b084-83f9806ade49}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\stb">
+      <UniqueIdentifier>{4daa2ab5-c772-4f93-b04b-f3794efbb4cd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Directx11.h">
@@ -111,6 +114,9 @@
     </ClInclude>
     <ClInclude Include="TextureBase.h">
       <Filter>ソース ファイル\Texture\TextureBase</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image.h">
+      <Filter>ソース ファイル\stb</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
