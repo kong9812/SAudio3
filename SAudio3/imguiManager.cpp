@@ -4,14 +4,11 @@
 #include "imguiManager.h"
 
 //===================================================================================================================================
-// 定数定義(多重定義対策)
-//===================================================================================================================================
-ImVec2 imGuiManagerNS::buttonSize = ImVec2(25, 25);
-
-//===================================================================================================================================
 // コンストラクタ
 //===================================================================================================================================
-ImGuiManager::ImGuiManager(HWND hWnd, ID3D11Device *device, ID3D11DeviceContext	*deviceContext, TextureBase *_textureBase)
+ImGuiManager::ImGuiManager(HWND hWnd, ID3D11Device *device,
+	ID3D11DeviceContext	*deviceContext, TextureBase *_textureBase,
+	SoundBase *_soundBase)
 {
 	// バージョンチェック
 	IMGUI_CHECKVERSION();
@@ -52,10 +49,12 @@ ImGuiManager::ImGuiManager(HWND hWnd, ID3D11Device *device, ID3D11DeviceContext	
 	// ImGuiフラグの初期化
 	showMainPanel = true;
 	showPlayerPanel = true;
+	showSoundBasePanel = true;
 	isPlaying = false;
 
 	// テクスチャベース
 	textureBase = _textureBase;
+	soundBase = _soundBase;
 }
 
 //===================================================================================================================================
@@ -145,6 +144,9 @@ void ImGuiManager::MainPanel()
 
 	// 再生パネル
 	PlayerPanel();
+
+	// サウンドベースパネル
+	SoundBasePanel();
 }
 
 //===================================================================================================================================
@@ -161,9 +163,11 @@ void ImGuiManager::MenuBar()
 			ImGui::EndMenu();
 		}
 
+		// ウインド
 		if (ImGui::BeginMenu("Window"))
 		{
 			ImGui::MenuItem("Player", "", &showPlayerPanel);
+			ImGui::MenuItem("Sound Base", "", &showSoundBasePanel);		
 			ImGui::EndMenu();
 		}
 
@@ -203,6 +207,28 @@ void ImGuiManager::PlayerPanel()
 				isPlaying = false;
 			}
 		}
+		ImGui::End();
+	}
+}
+
+//===================================================================================================================================
+// サウンドベースパネル
+//===================================================================================================================================
+void ImGuiManager::SoundBasePanel()
+{
+	// 再生パネル
+	if (showSoundBasePanel)
+	{
+		ImGui::Begin("Sound Base Panel", &showSoundBasePanel, ImGuiWindowFlags_::ImGuiWindowFlags_NoTitleBar);
+
+		// サウンド名の表示&ボタン
+		auto begin = soundBase->soundResource.begin();
+		auto end = soundBase->soundResource.end();
+		for (auto i = begin; i != end; i++)
+		{
+			ImGui::Button(i->first.data());
+		}
+
 		ImGui::End();
 	}
 }

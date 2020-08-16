@@ -6,6 +6,8 @@
 #include "Directx11.h"
 #include "imguiManager.h"
 #include "TextureBase.h"
+#include "SoundBase.h"
+#include "XAudio2Manager.h"
 
 //===================================================================================================================================
 // クラス
@@ -33,6 +35,8 @@ private:
 
 	ImGuiManager			*imGuiManager;		// ImGuiマネージャー
 	TextureBase				*textureBase;		// テクスチャベース
+	SoundBase				*soundBase;			// サウンドベース
+	XAudio2Manager			*xAudio2Manager;	// XAudio2マネージャー
 
 	bool					reSizeFlg;			// メインパネルのリサイズフラグ
 };

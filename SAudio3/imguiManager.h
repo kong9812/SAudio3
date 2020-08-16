@@ -5,6 +5,8 @@
 #include "Main.h"
 #include "Directx11.h"
 #include "TextureBase.h"
+#include "SoundBase.h"
+#include "XAudio2Manager.h"
 
 //===================================================================================================================================
 // ビルドスイッチ
@@ -27,7 +29,7 @@
 //===================================================================================================================================
 namespace imGuiManagerNS
 {
-	extern ImVec2 buttonSize;
+	const ImVec2 buttonSize = ImVec2(25, 25);
 }
 
 //===================================================================================================================================
@@ -36,7 +38,9 @@ namespace imGuiManagerNS
 class ImGuiManager
 {
 public:
-	ImGuiManager(HWND hWnd, ID3D11Device *device, ID3D11DeviceContext *deviceContext, TextureBase *textureBase);
+	ImGuiManager(HWND hWnd, ID3D11Device *device, 
+		ID3D11DeviceContext *deviceContext, TextureBase *textureBase,
+		SoundBase *soundBase);
 	~ImGuiManager();
 
 	// [ImGui]新しいフレームの作成
@@ -48,9 +52,11 @@ public:
 
 private:
 	TextureBase *textureBase;	// テクスチャベース
+	SoundBase	*soundBase;		// サウンドベース
 
 	bool showMainPanel;			// [ImGuiフラグ]メインパネル
 	bool showPlayerPanel;		// [ImGuiフラグ]再生パネル
+	bool showSoundBasePanel;	// [ImGuiフラグ]サウンドベースパネル
 
 	bool isPlaying;				// [プレイヤーパネル]再生中??
 
@@ -66,5 +72,6 @@ private:
 	// 再生パネル
 	void PlayerPanel();
 
-
+	// サウンドベースパネル
+	void SoundBasePanel();
 };

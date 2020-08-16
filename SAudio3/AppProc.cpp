@@ -19,8 +19,10 @@ AppProc::AppProc(HWND hWnd,
 	renderTargetView	= _renderTargetView;
 
 	// èâä˙âª
-	textureBase = new TextureBase(device);
-	imGuiManager = new ImGuiManager(hWnd, _device, _deviceContext, textureBase);
+	textureBase		= new TextureBase(device);
+	soundBase		= new SoundBase;
+	xAudio2Manager	= new XAudio2Manager;
+	imGuiManager	= new ImGuiManager(hWnd, _device, _deviceContext, textureBase, soundBase);
 }
 
 //===================================================================================================================================
@@ -30,6 +32,8 @@ AppProc::~AppProc()
 {
 	// èIóπèàóù
 	SAFE_DELETE(imGuiManager)
+	SAFE_DELETE(xAudio2Manager)
+	SAFE_DELETE(soundBase)
 	SAFE_DELETE(textureBase)
 }
 
