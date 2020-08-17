@@ -172,6 +172,7 @@ bool SoundBase::LoadSound(const char *path, SoundResource *soundResource)
 	soundResource->waveFormatEx.wFormatTag = WAVE_FORMAT_PCM;
 	soundResource->waveFormatEx.nBlockAlign = (wavFile.fmt.channel*wavFile.fmt.bitPerSample) / 8;
 	soundResource->waveFormatEx.nAvgBytesPerSec = wavFile.fmt.sampleRate*soundResource->waveFormatEx.nBlockAlign;
+	soundResource->size = wavFile.data.size;
 	soundResource->data = new short[wavFile.data.size / sizeof(short)];
 	memcpy(soundResource->data, wavFile.data.data, wavFile.data.size);
 
@@ -203,7 +204,7 @@ bool SoundBase::ReadRIFF(FILE *fp, WAV_FILE *wavFile)
 bool SoundBase::ReadFMT(FILE *fp, WAV_FILE *wavFile, char *chunk, long size)
 {
 	// FMTの読み込み
-	if (memcmp(&chunk, soundBaseNS::chunkFmt, soundBaseNS::chunkSize))
+	if (memcmp(chunk, soundBaseNS::chunkFmt, soundBaseNS::chunkSize) == 0)
 	{
 		// チャンクとサイズの設定
 		memcpy(wavFile->fmt.chunk, chunk, soundBaseNS::chunkSize);
@@ -225,7 +226,7 @@ bool SoundBase::ReadFMT(FILE *fp, WAV_FILE *wavFile, char *chunk, long size)
 bool SoundBase::ReadDATA(FILE *fp, WAV_FILE *wavFile, char *chunk, long size)
 {
 	// DATAの読み込み
-	if (memcmp(&chunk, soundBaseNS::chunkData, soundBaseNS::chunkSize))
+	if (memcmp(chunk, soundBaseNS::chunkData, soundBaseNS::chunkSize) == 0)
 	{
 		// チャンクとサイズの設定
 		memcpy(wavFile->data.chunk, chunk, soundBaseNS::chunkSize);

@@ -57,6 +57,7 @@ struct WAV_FILE
 
 struct SoundResource
 {
+	long size;
 	short *data;
 	WAVEFORMATEX waveFormatEx;
 };

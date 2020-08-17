@@ -5,13 +5,18 @@
 #include <thread>
 #include <iostream>
 #include <map>
+#include <list>
 #include <string>
 #include <bitset> 
 #include <sstream>
+#include <cmath>
 #include <stdio.h>
 #include <crtdbg.h>
 #include <windows.h>
+#include <Pdh.h>
+#include <PdhMsg.h>
 
+#pragma comment (lib, "pdh.lib")
 #pragma comment(lib,"winmm.lib")
 
 //===================================================================================================================================
@@ -34,6 +39,7 @@
 #define SAFE_DELETE(p)			if (p){ delete (p);  p = NULL; }
 #define SAFE_DELETE_ARRAY(p)    if (p){ delete [] (p);  p = NULL; } 
 #define APP_NAME				(LPSTR)"SAudio3"
+#define BYTES_TO_GB(b)			(b) / 1024.0f / 1024.0f / 1024.0f
 
 //===================================================================================================================================
 // エラーメッセージ・コード

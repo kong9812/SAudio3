@@ -21,8 +21,8 @@ AppProc::AppProc(HWND hWnd,
 	// èâä˙âª
 	textureBase		= new TextureBase(device);
 	soundBase		= new SoundBase;
-	xAudio2Manager	= new XAudio2Manager;
-	imGuiManager	= new ImGuiManager(hWnd, _device, _deviceContext, textureBase, soundBase);
+	xAudio2Manager	= new XAudio2Manager(soundBase);
+	imGuiManager	= new ImGuiManager(hWnd, _device, _deviceContext, textureBase, soundBase, xAudio2Manager);
 }
 
 //===================================================================================================================================

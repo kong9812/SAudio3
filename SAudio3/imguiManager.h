@@ -33,14 +33,30 @@ namespace imGuiManagerNS
 }
 
 //===================================================================================================================================
+// 構造体
+//===================================================================================================================================
+struct Performance_Record
+{
+	int cpuNum;
+	SYSTEM_INFO systeminfo;
+	MEMORYSTATUSEX memoryStatusEx;
+	PDH_HQUERY pdhHquery;
+	PDH_HCOUNTER cpuCounter;
+	PDH_HCOUNTER memoryCounter;
+	float cpuUsage;
+	float memoryUsage;
+	int timeCnt;
+};
+
+//===================================================================================================================================
 // クラス
 //===================================================================================================================================
 class ImGuiManager
 {
 public:
-	ImGuiManager(HWND hWnd, ID3D11Device *device, 
+	ImGuiManager(HWND hWnd, ID3D11Device *device,
 		ID3D11DeviceContext *deviceContext, TextureBase *textureBase,
-		SoundBase *soundBase);
+		SoundBase *soundBase, XAudio2Manager *xAudio2Manager);
 	~ImGuiManager();
 
 	// [ImGui]新しいフレームの作成
@@ -51,8 +67,9 @@ public:
 	void ShowPanel();
 
 private:
-	TextureBase *textureBase;	// テクスチャベース
-	SoundBase	*soundBase;		// サウンドベース
+	TextureBase		*textureBase;		// テクスチャベース
+	SoundBase		*soundBase;			// サウンドベース
+	XAudio2Manager	*xAudio2Manager;	// XAudio2マネージャー
 
 	bool showMainPanel;			// [ImGuiフラグ]メインパネル
 	bool showPlayerPanel;		// [ImGuiフラグ]再生パネル
@@ -60,11 +77,19 @@ private:
 
 	bool isPlaying;				// [プレイヤーパネル]再生中??
 
+	Performance_Record performanceRecord;	// パフォーマンス記録
+
 	// [ImGui]リサイズ
 	void ReSize(LONG right, LONG bottom);
 
 	// メインパネル
 	void MainPanel();
+
+	// パフォーマンスビューアの初期化
+	void PerformanceViewerInit();
+
+	// パフォーマンスビューア
+	void PerformanceViewer();
 
 	// メニューバー
 	void MenuBar();

@@ -6,7 +6,7 @@
 //===================================================================================================================================
 // コンストラクタ
 //===================================================================================================================================
-XAudio2Manager::XAudio2Manager()
+XAudio2Manager::XAudio2Manager(SoundBase *_soundBase)
 {
 	HRESULT hr = NULL;
 
@@ -78,6 +78,8 @@ XAudio2Manager::XAudio2Manager()
 		// 強制終了
 		PostQuitMessage(0);
 	}
+
+	soundBase = _soundBase;
 }
 
 //===================================================================================================================================
@@ -85,6 +87,21 @@ XAudio2Manager::XAudio2Manager()
 //===================================================================================================================================
 XAudio2Manager::~XAudio2Manager()
 {
+	// 連想配列の削除
+	if (voiceResource.size() > NULL)
+	{
+		// サウンドリソースの終了処理
+		auto begin = voiceResource.begin();
+		auto end = voiceResource.end();
+		for (auto i = begin; i != end; i++)
+		{
+			// ソースボイスの終了処理
+			//i->second.sourceVoice->Stop();
+			SAFE_DESTROY_VOICE(i->second.sourceVoice)
+		}
+		voiceResource.clear();
+	}
+
 	// マスターボイスの終了処理
 	SAFE_DESTROY_VOICE(XAudio2MasteringVoice)
 
@@ -103,6 +120,7 @@ IXAudio2MasteringVoice *XAudio2Manager::CreateMasterVoice(IXAudio2 *xAudio2)
 	HRESULT hr = NULL;
 	IXAudio2MasteringVoice *tmpXAudio2MasteringVoice = nullptr;
 
+	// マスターボイスの作成
 	hr = xAudio2->CreateMasteringVoice(&tmpXAudio2MasteringVoice,
 		XAUDIO2_DEFAULT_CHANNELS, XAUDIO2_DEFAULT_SAMPLERATE,
 		NULL, NULL, NULL);
@@ -118,4 +136,101 @@ IXAudio2MasteringVoice *XAudio2Manager::CreateMasterVoice(IXAudio2 *xAudio2)
 	}
 
 	return tmpXAudio2MasteringVoice;
+}
+
+//===================================================================================================================================
+// ボイスリソースの作成
+//===================================================================================================================================
+void XAudio2Manager::CreateVoiceResourceVoice(IXAudio2 *xAudio2, std::string voiceName, SoundResource soundResource)
+{
+	IXAudio2 *tmpXAudio = xAudio2;	// 外部からのXAudio2
+	IXAudio2SourceVoice *tmpXAudio2SourceVoice = nullptr;
+
+	// 外部からのXAudio2が存在しないなら
+	if (tmpXAudio == nullptr)
+	{
+		// 内部のXAudio2
+		tmpXAudio = XAudio2;
+	}
+	
+	// バッファの設定
+	XAUDIO2_BUFFER buffer = { 0 };
+	buffer.pAudioData = (BYTE*)soundResource.data;
+	buffer.Flags = XAUDIO2_END_OF_STREAM;
+	buffer.AudioBytes = soundResource.size;
+	buffer.LoopCount = 255;
+	buffer.LoopBegin = 0;
+
+	// ソースボイスの作成
+	HRESULT hr = NULL;
+	hr = tmpXAudio->CreateSourceVoice(&tmpXAudio2SourceVoice, &soundResource.waveFormatEx);
+	hr = tmpXAudio2SourceVoice->SubmitSourceBuffer(&buffer);
+
+
+	// ボイスリソースの作成
+	voiceResource[voiceName].sourceVoice = tmpXAudio2SourceVoice;
+	voiceResource[voiceName].isPlaying = false;
+}
+
+//===================================================================================================================================
+// ソースボイスの再生・一時停止
+//===================================================================================================================================
+void XAudio2Manager::PlayPauseSourceVoice(IXAudio2 *xAudio2, std::string voiceName)
+{
+	// 該当ボイスが存在しない
+	if (voiceResource.count(voiceName) == NULL)
+	{
+		IXAudio2 *tmpXAudio = xAudio2;	// 外部からのXAudio2
+
+		// 外部からのXAudio2が存在しないなら
+		if (tmpXAudio == nullptr)
+		{
+			// 内部のXAudio2
+			tmpXAudio = XAudio2;
+		}
+
+		// ソースボイスの作成
+		CreateVoiceResourceVoice(tmpXAudio, voiceName, soundBase->soundResource[voiceName]);
+	}
+
+	// 再生
+	if (!voiceResource[voiceName].isPlaying)
+	{
+		HRESULT hr = NULL;
+		hr = voiceResource[voiceName].sourceVoice->Start();
+		voiceResource[voiceName].isPlaying = true;
+	}
+	else
+	{
+		voiceResource[voiceName].sourceVoice->Stop();
+		voiceResource[voiceName].isPlaying = false;
+	}
+}
+
+//===================================================================================================================================
+// 再生状態
+//===================================================================================================================================
+bool XAudio2Manager::GetIsPlaying(std::string voiceName)
+{
+	if (voiceResource.count(voiceName) == NULL)
+	{
+		return false;
+	}
+
+	return voiceResource[voiceName].isPlaying;
+}
+
+//===================================================================================================================================
+// ボイス状態
+//===================================================================================================================================
+XAUDIO2_VOICE_STATE XAudio2Manager::GetVoiceState(std::string voiceName)
+{
+	XAUDIO2_VOICE_STATE voiceState = { NULL };
+
+	if (voiceResource.count(voiceName) > NULL)
+	{
+		voiceResource[voiceName].sourceVoice->GetState(&voiceState);
+	}
+
+	return voiceState;
 }

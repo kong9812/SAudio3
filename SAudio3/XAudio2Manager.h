@@ -2,8 +2,9 @@
 // インクルード
 //===================================================================================================================================
 #pragma once
-#include "Main.h"
 #include <xaudio2.h>
+#include "Main.h"
+#include "SoundBase.h"
 
 //===================================================================================================================================
 // 定数定義
@@ -15,18 +16,42 @@
 #define SAFE_DESTROY_VOICE(p)			if(p){  (p)->DestroyVoice(); p = NULL; }
 
 //===================================================================================================================================
+// 構造体
+//===================================================================================================================================
+struct VoiceResource
+{
+	bool isPlaying;
+	IXAudio2SourceVoice *sourceVoice;
+};
+
+//===================================================================================================================================
 // クラス
 //===================================================================================================================================
 class XAudio2Manager
 {
 public:
-	XAudio2Manager();
+	XAudio2Manager(SoundBase *_soundBase);
 	~XAudio2Manager();
 
 	// マスターボイスの作成
-	IXAudio2MasteringVoice *CreateMasterVoice(IXAudio2 *xAudio2);
+	IXAudio2MasteringVoice	*CreateMasterVoice(IXAudio2 *xAudio2);
+
+	// ボイスリソースの作成
+	void CreateVoiceResourceVoice(IXAudio2 *xAudio2, std::string voiceName, SoundResource soundResource);
+
+	// ソースボイスの再生・一時停止
+	void PlayPauseSourceVoice(IXAudio2 *xAudio2, std::string voiceName);
+
+	// 再生状態
+	bool GetIsPlaying(std::string voiceName);
+
+	// ボイス状態
+	XAUDIO2_VOICE_STATE GetVoiceState(std::string voiceName);
 
 private:
-	IXAudio2 *XAudio2;								// XAudio2
-	IXAudio2MasteringVoice *XAudio2MasteringVoice;	// マスターボイス
+	SoundBase				*soundBase;							// サウンドベース
+
+	IXAudio2				*XAudio2;							// XAudio2
+	IXAudio2MasteringVoice	*XAudio2MasteringVoice;				// マスターボイス
+	std::map<std::string, VoiceResource> voiceResource;			// ボイスリソース
 };

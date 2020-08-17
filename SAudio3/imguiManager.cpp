@@ -8,7 +8,7 @@
 //===================================================================================================================================
 ImGuiManager::ImGuiManager(HWND hWnd, ID3D11Device *device,
 	ID3D11DeviceContext	*deviceContext, TextureBase *_textureBase,
-	SoundBase *_soundBase)
+	SoundBase *_soundBase, XAudio2Manager *_xAudio2Manager)
 {
 	// バージョンチェック
 	IMGUI_CHECKVERSION();
@@ -16,6 +16,10 @@ ImGuiManager::ImGuiManager(HWND hWnd, ID3D11Device *device,
 	// [ImGui]コンテクストの作成
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	//ImFontConfig config;
+	//config.MergeMode = true;
+	//io.Fonts->AddFontDefault();
+	io.Fonts->AddFontFromFileTTF("ImGui\\font\\utf-8.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
 
 #if USE_IMGUI_DOCKING
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;		// ドッキングの使用許可
@@ -50,11 +54,16 @@ ImGuiManager::ImGuiManager(HWND hWnd, ID3D11Device *device,
 	showMainPanel = true;
 	showPlayerPanel = true;
 	showSoundBasePanel = true;
+
 	isPlaying = false;
 
 	// テクスチャベース
 	textureBase = _textureBase;
 	soundBase = _soundBase;
+	xAudio2Manager = _xAudio2Manager;
+
+	// パフォーマンスビューアの初期化
+	PerformanceViewerInit();
 }
 
 //===================================================================================================================================
@@ -135,6 +144,9 @@ void ImGuiManager::MainPanel()
 		// テスト文字の表示
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
+		// パフォーマンスビューア
+		PerformanceViewer();
+
 		// ドッキング
 		ImGuiID dockspaceID = ImGui::GetID("MainPanelDockSpace");
 		ImGui::DockSpace(dockspaceID, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
@@ -147,6 +159,73 @@ void ImGuiManager::MainPanel()
 
 	// サウンドベースパネル
 	SoundBasePanel();
+}
+
+//===================================================================================================================================
+// パフォーマンスビューアの初期化
+//===================================================================================================================================
+void ImGuiManager::PerformanceViewerInit()
+{
+	// CPUコア数の取得
+	GetSystemInfo(&performanceRecord.systeminfo);
+	performanceRecord.cpuNum = performanceRecord.systeminfo.dwNumberOfProcessors;
+
+	// 物理メモリの取得(4Gバイト以上のみ)
+	performanceRecord.memoryStatusEx = { sizeof(MEMORYSTATUSEX) };
+	GlobalMemoryStatusEx(&performanceRecord.memoryStatusEx);
+
+	// ハンドルの作成
+	PdhOpenQuery(NULL, 0, &performanceRecord.pdhHquery);
+	
+	// アプリケーション名
+	std::string instanceName = "\\Process(SAudio3)";
+
+	// カウンターパスの登録
+	std::string cpu_counter_path = instanceName + "\\% Processor Time";
+	if (ERROR_SUCCESS != PdhAddCounter(performanceRecord.pdhHquery, cpu_counter_path.c_str(),
+		0, &performanceRecord.cpuCounter)) 
+	{
+		performanceRecord.cpuCounter = nullptr;
+	}
+	std::string mem_counter_path = instanceName + "\\Working Set - Private";
+	if (ERROR_SUCCESS != PdhAddCounter(performanceRecord.pdhHquery, mem_counter_path.c_str(),
+		0, &performanceRecord.memoryCounter)) 
+	{
+		performanceRecord.memoryCounter = nullptr;
+	}
+}
+
+//===================================================================================================================================
+// パフォーマンスビューア
+//===================================================================================================================================
+void ImGuiManager::PerformanceViewer()
+{
+	// 1秒
+	if ((timeGetTime() - performanceRecord.timeCnt) >= 1000)
+	{
+		performanceRecord.timeCnt = timeGetTime();
+		PdhCollectQueryData(performanceRecord.pdhHquery);
+
+		// CPU使用率
+		PDH_FMT_COUNTERVALUE fmtvalue = { NULL };
+		PDH_STATUS status = PdhGetFormattedCounterValue(performanceRecord.cpuCounter, PDH_FMT_DOUBLE, NULL, &fmtvalue);
+		performanceRecord.cpuUsage = fmtvalue.doubleValue;
+
+		// メモリ消費量
+		status = PdhGetFormattedCounterValue(performanceRecord.memoryCounter, PDH_FMT_LONG, NULL, &fmtvalue);
+		performanceRecord.memoryUsage = fmtvalue.longValue;
+	}
+
+	// CPUの数
+	ImGui::Text(u8"CPU Core:%d    物理メモリの搭載容量:%.2f Gb",
+		performanceRecord.cpuNum,
+		BYTES_TO_GB(performanceRecord.memoryStatusEx.ullTotalPhys));
+
+	// CPU使用率
+	ImGui::Text(u8"CPU使用率:%.2f", performanceRecord.cpuUsage);
+
+	// メモリ消費量
+	ImGui::Text(u8"メモリ:%.2f gb", BYTES_TO_GB(performanceRecord.memoryUsage));
 }
 
 //===================================================================================================================================
@@ -216,7 +295,7 @@ void ImGuiManager::PlayerPanel()
 //===================================================================================================================================
 void ImGuiManager::SoundBasePanel()
 {
-	// 再生パネル
+	// サウンドベースパネル
 	if (showSoundBasePanel)
 	{
 		ImGui::Begin("Sound Base Panel", &showSoundBasePanel, ImGuiWindowFlags_::ImGuiWindowFlags_NoTitleBar);
@@ -226,7 +305,25 @@ void ImGuiManager::SoundBasePanel()
 		auto end = soundBase->soundResource.end();
 		for (auto i = begin; i != end; i++)
 		{
-			ImGui::Button(i->first.data());
+			// サウンドの選択
+			if (ImGui::Button(i->first.data()))
+			{
+				// 再生・一時停止
+				xAudio2Manager->PlayPauseSourceVoice(nullptr, i->first.data());
+			}
+
+			// 再生位置
+			XAUDIO2_VOICE_STATE voiceState = xAudio2Manager->GetVoiceState(i->first.data());
+			ImGui::Text("%d", voiceState.SamplesPlayed);
+			float tmp = (voiceState.SamplesPlayed % (i->second.size / sizeof(short) / i->second.waveFormatEx.nChannels)) 
+				/ (float)(i->second.size / sizeof(short) / i->second.waveFormatEx.nChannels);
+			ImGui::ProgressBar(tmp);
+
+			// 再生中のみ
+			if (xAudio2Manager->GetIsPlaying(i->first.data()))
+			{
+
+			}
 		}
 
 		ImGui::End();
