@@ -30,6 +30,8 @@
 namespace imGuiManagerNS
 {
 	const ImVec2 buttonSize = ImVec2(25, 25);
+	const float masteringVoiceVolumeSliderWidth = 400;
+	const ImVec2 soundBasePanelProgressBarSize = ImVec2(-1.0f, 5.0f);
 }
 
 //===================================================================================================================================
@@ -71,11 +73,11 @@ private:
 	SoundBase		*soundBase;			// サウンドベース
 	XAudio2Manager	*xAudio2Manager;	// XAudio2マネージャー
 
-	bool showMainPanel;			// [ImGuiフラグ]メインパネル
-	bool showPlayerPanel;		// [ImGuiフラグ]再生パネル
-	bool showSoundBasePanel;	// [ImGuiフラグ]サウンドベースパネル
-
-	bool isPlaying;				// [プレイヤーパネル]再生中??
+	bool showMainPanel;					// [ImGuiフラグ]メインパネル
+	bool showPlayerPanel;				// [ImGuiフラグ]再生パネル
+	bool showSoundBasePanel;			// [ImGuiフラグ]サウンドベースパネル
+	bool isPlaying;						// [プレイヤーパネル]再生中??
+	bool isMasteringVoiceVolumeOver1;	// マスターボイスのボリュームが1を超えられる?
 
 	Performance_Record performanceRecord;	// パフォーマンス記録
 
@@ -96,6 +98,9 @@ private:
 
 	// 再生パネル
 	void PlayerPanel();
+
+	// マスターボイスボリューム
+	void MasteringVoiceVolumePanel();
 
 	// サウンドベースパネル
 	void SoundBasePanel();

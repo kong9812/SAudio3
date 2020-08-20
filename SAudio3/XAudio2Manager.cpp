@@ -8,7 +8,7 @@
 //===================================================================================================================================
 XAudio2Manager::XAudio2Manager(SoundBase *_soundBase)
 {
-	HRESULT hr = NULL;
+	HRESULT hr = E_FAIL;
 
 	// COMの初期化
 	hr = (CoInitializeEx(nullptr, COINIT_MULTITHREADED));
@@ -117,7 +117,7 @@ XAudio2Manager::~XAudio2Manager()
 //===================================================================================================================================
 IXAudio2MasteringVoice *XAudio2Manager::CreateMasterVoice(IXAudio2 *xAudio2)
 {
-	HRESULT hr = NULL;
+	HRESULT hr = E_FAIL;
 	IXAudio2MasteringVoice *tmpXAudio2MasteringVoice = nullptr;
 
 	// マスターボイスの作成
@@ -162,9 +162,8 @@ void XAudio2Manager::CreateVoiceResourceVoice(IXAudio2 *xAudio2, std::string voi
 	buffer.LoopBegin = 0;
 
 	// ソースボイスの作成
-	HRESULT hr = NULL;
-	hr = tmpXAudio->CreateSourceVoice(&tmpXAudio2SourceVoice, &soundResource.waveFormatEx);
-	hr = tmpXAudio2SourceVoice->SubmitSourceBuffer(&buffer);
+	tmpXAudio->CreateSourceVoice(&tmpXAudio2SourceVoice, &soundResource.waveFormatEx);
+	tmpXAudio2SourceVoice->SubmitSourceBuffer(&buffer);
 
 
 	// ボイスリソースの作成
@@ -196,8 +195,7 @@ void XAudio2Manager::PlayPauseSourceVoice(IXAudio2 *xAudio2, std::string voiceNa
 	// 再生
 	if (!voiceResource[voiceName].isPlaying)
 	{
-		HRESULT hr = NULL;
-		hr = voiceResource[voiceName].sourceVoice->Start();
+		voiceResource[voiceName].sourceVoice->Start();
 		voiceResource[voiceName].isPlaying = true;
 	}
 	else
@@ -205,6 +203,39 @@ void XAudio2Manager::PlayPauseSourceVoice(IXAudio2 *xAudio2, std::string voiceNa
 		voiceResource[voiceName].sourceVoice->Stop();
 		voiceResource[voiceName].isPlaying = false;
 	}
+}
+
+//===================================================================================================================================
+// マスターボイスボリューム(レベル)の取得
+//===================================================================================================================================
+float XAudio2Manager::GetMasteringVoiceVolumeLevel(void)
+{
+	float volume = NULL;
+	
+	// ボリューム取得
+	XAudio2MasteringVoice->GetVolume(&volume);
+
+	return volume;
+}
+
+//===================================================================================================================================
+// マスターボイスボリューム(レベル)の調整
+//===================================================================================================================================
+HRESULT XAudio2Manager::SetMasteringVoiceVolumeLevel(float _volume)
+{
+	HRESULT hr = E_FAIL;
+
+	// 重い対策
+	if (_volume != oldMasteringVoiceVolume)
+	{
+		// ボリューム調整
+		if ((_volume <= xAudioManagerNS::overVolume) && (_volume >= xAudioManagerNS::minVolume))
+		{
+			hr = XAudio2MasteringVoice->SetVolume(_volume);
+			oldMasteringVoiceVolume = _volume;
+		}
+	}
+	return hr;
 }
 
 //===================================================================================================================================

@@ -216,7 +216,6 @@ bool SoundBase::ReadFMT(FILE *fp, WAV_FILE *wavFile, char *chunk, long size)
 		// ¬Œ÷
 		return true;
 	}
-
 	return false;
 }
 
@@ -241,6 +240,5 @@ bool SoundBase::ReadDATA(FILE *fp, WAV_FILE *wavFile, char *chunk, long size)
 		// ¬Œ÷
 		return true;
 	}
-
 	return false;
 }

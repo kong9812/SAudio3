@@ -50,6 +50,9 @@
     <Filter Include="ソース ファイル\SoundCore\SoundBase">
       <UniqueIdentifier>{d2ff687e-da9c-4684-a88e-c076a8450b0f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="メモ">
+      <UniqueIdentifier>{17e7ddba-39e0-4a54-96d5-4dc8227e4c5a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Directx11.h">
@@ -189,5 +192,18 @@
     <ClCompile Include="SoundBase.cpp">
       <Filter>ソース ファイル\SoundCore\SoundBase</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\SaiAudio3企画メモ.txt">
+      <Filter>メモ</Filter>
+    </Text>
+    <Text Include="..\素材リスト.txt">
+      <Filter>メモ</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Readme.md">
+      <Filter>メモ</Filter>
+    </None>
   </ItemGroup>
 </Project>
