@@ -22,6 +22,7 @@ public:
 
 	void tmpPlot(void);
 private:
+	int usedTime;
 
-	float tmpPlotData[10000];
+	float tmpPlotData[10240];
 };

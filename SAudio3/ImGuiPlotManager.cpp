@@ -43,17 +43,19 @@ void ImGuiPlotManager::PlotCompressWave(std::string soundName, SoundResource *so
 		ImGui::PlotLines("", tmpCompressData->data, imGuiPlotManagerNS::compressSize, 0, "", FLT_MAX, FLT_MAX, plotextent);
 		tmpCompressData->usedTime = tmpCompressData->endTime - tmpCompressData->startTime;
 		ImGui::Text("usedTime:%d", tmpCompressData->usedTime);
-	}
-	else
-	{
-		// ˆ³kˆ—
-		Compress_Data *tmpCompressData = &compressData[soundName];
 		static bool ffgagf = true;
 		if (ffgagf)
 		{
 			cudaCalc->Kernel1(soundResource->data, soundResource->size);
 			ffgagf = !ffgagf;
 		}
+		cudaCalc->tmpPlot();
+		ImGui::Text("size:%ld", soundResource->size);
+	}
+	else
+	{
+		// ˆ³kˆ—
+		Compress_Data *tmpCompressData = &compressData[soundName];
 		CreateCompressWave(soundName, soundResource);
 		ImGui::Text("compressBlock:%d", tmpCompressData->compressBlock);
 		ImGui::Text("readPos:%ld", tmpCompressData->readPos);

@@ -359,7 +359,7 @@ void ImGuiManager::SoundBasePanel()
 		for (auto i = begin; i != end; i++)
 		{
 			// 画面サイズの制限・2個目のボタンが反応しない対応
-			if (ImGui::BeginChild(i->first.data(), ImVec2(ImGui::GetWindowSize().x - 100, 250)))
+			if (ImGui::BeginChild(i->first.data(), ImVec2(ImGui::GetWindowSize().x - 100, 300)))
 			{
 				// 再生中のみ
 				if (xAudio2Manager->GetIsPlaying(i->first.data()))

@@ -11,7 +11,7 @@
 namespace imGuiPlotManagerNS
 {
 	const int dataLoadInOneFrame = 1000;	// 1フレームで読み込めるデータ量
-	const int compressSize = 10000;			// 圧縮後のデータ量(プロットできるデータ量)	long_max > shrt_max*compressSize
+	const int compressSize = 10240;			// 圧縮後のデータ量(プロットできるデータ量)	long_max > shrt_max*compressSize
 }
 
 //===================================================================================================================================
