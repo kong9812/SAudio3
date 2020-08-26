@@ -37,30 +37,28 @@ void ImGuiPlotManager::PlotCompressWave(std::string soundName, SoundResource *so
 	if (!soundResource->isWaveUpdate && soundResource->isCompressed)
 	{
 		// ƒvƒƒbƒg
-		Compress_Data *tmpCompressData = &compressData[soundName];
+		//Compress_Data *tmpCompressData = &compressData[soundName];
+		//ImVec2 plotextent(ImGui::GetContentRegionAvailWidth(), 100);
+		//ImGui::PlotLines("", tmpCompressData->data, imGuiPlotManagerNS::compressSize, 0, "", FLT_MAX, FLT_MAX, plotextent);
+		//tmpCompressData->usedTime = tmpCompressData->endTime - tmpCompressData->startTime;
+		//ImGui::Text("usedTime:%d", tmpCompressData->usedTime);
 
-		ImVec2 plotextent(ImGui::GetContentRegionAvailWidth(), 100);
-		ImGui::PlotLines("", tmpCompressData->data, imGuiPlotManagerNS::compressSize, 0, "", FLT_MAX, FLT_MAX, plotextent);
-		tmpCompressData->usedTime = tmpCompressData->endTime - tmpCompressData->startTime;
-		ImGui::Text("usedTime:%d", tmpCompressData->usedTime);
-		static bool ffgagf = true;
-		if (ffgagf)
-		{
-			cudaCalc->Kernel1(soundResource->data, soundResource->size);
-			ffgagf = !ffgagf;
-		}
 		cudaCalc->tmpPlot();
 		ImGui::Text("size:%ld", soundResource->size);
 	}
 	else
 	{
 		// ˆ³kˆ—
-		Compress_Data *tmpCompressData = &compressData[soundName];
-		CreateCompressWave(soundName, soundResource);
-		ImGui::Text("compressBlock:%d", tmpCompressData->compressBlock);
-		ImGui::Text("readPos:%ld", tmpCompressData->readPos);
-		ImGui::Text("dataPos:%d", tmpCompressData->dataPos);
-		ImGui::Text("size:%ld", soundResource->size);
+		//Compress_Data *tmpCompressData = &compressData[soundName];
+		//CreateCompressWave(soundName, soundResource);
+		//ImGui::Text("compressBlock:%d", tmpCompressData->compressBlock);
+		//ImGui::Text("readPos:%ld", tmpCompressData->readPos);
+		//ImGui::Text("dataPos:%d", tmpCompressData->dataPos);
+		//ImGui::Text("size:%ld", soundResource->size);
+
+		cudaCalc->Kernel1(soundResource->data, soundResource->size);
+		soundResource->isWaveUpdate = !soundResource->isWaveUpdate;
+		soundResource->isCompressed = !soundResource->isCompressed;
 	}
 }
 
