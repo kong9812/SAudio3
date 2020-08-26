@@ -53,6 +53,15 @@
     <Filter Include="メモ">
       <UniqueIdentifier>{17e7ddba-39e0-4a54-96d5-4dc8227e4c5a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\ImGui\ImGuiPlotManager">
+      <UniqueIdentifier>{d5b4dbb8-c6ca-4c37-8e87-a897943e5bae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Icon">
+      <UniqueIdentifier>{59a0ddfe-a1ad-4c27-95c0-d8781b1986fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\CUDA">
+      <UniqueIdentifier>{b5ce0de9-964a-4de3-9f5b-726dc9f840d8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Directx11.h">
@@ -130,6 +139,12 @@
     <ClInclude Include="SoundBase.h">
       <Filter>ソース ファイル\SoundCore\SoundBase</Filter>
     </ClInclude>
+    <ClInclude Include="ImGuiPlotManager.h">
+      <Filter>ソース ファイル\ImGui\ImGuiPlotManager</Filter>
+    </ClInclude>
+    <ClInclude Include="icon.h">
+      <Filter>ソース ファイル\Icon</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Directx11.cpp">
@@ -192,6 +207,9 @@
     <ClCompile Include="SoundBase.cpp">
       <Filter>ソース ファイル\SoundCore\SoundBase</Filter>
     </ClCompile>
+    <ClCompile Include="ImGuiPlotManager.cpp">
+      <Filter>ソース ファイル\ImGui\ImGuiPlotManager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\SaiAudio3企画メモ.txt">
@@ -205,5 +223,23 @@
     <None Include="..\Readme.md">
       <Filter>メモ</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon.ico">
+      <Filter>ソース ファイル\Icon</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="icon.rc">
+      <Filter>ソース ファイル\Icon</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="cudaCalc.cu">
+      <Filter>ソース ファイル\CUDA</Filter>
+    </CudaCompile>
+    <CudaCompile Include="cudaCalc.cuh">
+      <Filter>ソース ファイル\CUDA</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>

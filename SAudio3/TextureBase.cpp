@@ -27,7 +27,7 @@ TextureBase::TextureBase(ID3D11Device *device)
 		if (!LoadTexture(device, path.c_str(), &shaderResource[FindFileData.cFileName]))
 		{
 			// エラーメッセージ
-			MessageBox(NULL, errorNS::DXShaderResourceError, APP_NAME, (MB_OK | MB_ICONERROR));
+			MessageBox(NULL, errorNS::DXShaderResourceError, MAIN_APP_NAME, (MB_OK | MB_ICONERROR));
 
 			// 強制終了
 			PostQuitMessage(0);
@@ -49,7 +49,7 @@ TextureBase::TextureBase(ID3D11Device *device)
 			if (!LoadTexture(device, path.c_str(), &shaderResource[FindFileData.cFileName]))
 			{
 				// エラーメッセージ
-				MessageBox(NULL, errorNS::DXShaderResourceError, APP_NAME, (MB_OK | MB_ICONERROR));
+				MessageBox(NULL, errorNS::DXShaderResourceError, MAIN_APP_NAME, (MB_OK | MB_ICONERROR));
 
 				// 強制終了
 				PostQuitMessage(0);
@@ -69,7 +69,7 @@ TextureBase::TextureBase(ID3D11Device *device)
 	else
 	{
 		// エラーメッセージ
-		MessageBox(NULL, errorNS::TextureImportError, APP_NAME, (MB_OK | MB_ICONERROR));
+		MessageBox(NULL, errorNS::TextureImportError, MAIN_APP_NAME, (MB_OK | MB_ICONERROR));
 
 #ifndef _DEBUG
 		// 強制終了

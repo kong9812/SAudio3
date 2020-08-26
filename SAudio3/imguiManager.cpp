@@ -1,7 +1,7 @@
 //===================================================================================================================================
 // インクルード
 //===================================================================================================================================
-#include "imguiManager.h"
+#include "ImguiManager.h"
 
 //===================================================================================================================================
 // コンストラクタ
@@ -25,14 +25,14 @@ ImGuiManager::ImGuiManager(HWND hWnd, ID3D11Device *device,
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;		// ドッキングの使用許可
 #endif
 
-	// ダークモード
+	// クラシックモード(色)
 	ImGui::StyleColorsClassic();
 
 	// [ImGui]win32の初期化
 	if (!ImGui_ImplWin32_Init(hWnd))
 	{
 		// エラーメッセージ
-		MessageBox(NULL, errorNS::ImGuiWin32InitError, APP_NAME, (MB_OK | MB_ICONERROR));
+		MessageBox(NULL, errorNS::ImGuiWin32InitError, MAIN_APP_NAME, (MB_OK | MB_ICONERROR));
 
 		// 強制終了
 		PostQuitMessage(0);
@@ -43,7 +43,7 @@ ImGuiManager::ImGuiManager(HWND hWnd, ID3D11Device *device,
 	if (!ImGui_ImplDX11_Init(device, deviceContext))
 	{
 		// エラーメッセージ
-		MessageBox(NULL, errorNS::ImGuiInitError, APP_NAME, (MB_OK | MB_ICONERROR));
+		MessageBox(NULL, errorNS::ImGuiInitError, MAIN_APP_NAME, (MB_OK | MB_ICONERROR));
 
 		// 強制終了
 		PostQuitMessage(0);
@@ -65,6 +65,9 @@ ImGuiManager::ImGuiManager(HWND hWnd, ID3D11Device *device,
 
 	// パフォーマンスビューアの初期化
 	PerformanceViewerInit();
+
+	// プロットマネージャー
+	imGuiPlotManager = new ImGuiPlotManager;
 }
 
 //===================================================================================================================================
@@ -83,6 +86,7 @@ void ImGuiManager::CreateNewFrame()
 ImGuiManager::~ImGuiManager()
 {
 	// [ImGui]終了処理
+	SAFE_DELETE(imGuiPlotManager)
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
@@ -126,6 +130,9 @@ void ImGuiManager::ShowPanel()
 //===================================================================================================================================
 void ImGuiManager::MainPanel()
 {
+	// データカウンターリセット
+	imGuiPlotManager->ResetDataCnt();
+
 	// メインパネル
 	if (showMainPanel)
 	{
@@ -289,7 +296,6 @@ void ImGuiManager::PlayerPanel()
 
 		ImGui::End();
 	}
-
 }
 
 //===================================================================================================================================
@@ -353,7 +359,7 @@ void ImGuiManager::SoundBasePanel()
 		for (auto i = begin; i != end; i++)
 		{
 			// 画面サイズの制限・2個目のボタンが反応しない対応
-			if (ImGui::BeginChild(i->first.data(), ImVec2(ImGui::GetWindowSize().x - 100, 70)))
+			if (ImGui::BeginChild(i->first.data(), ImVec2(ImGui::GetWindowSize().x - 100, 250)))
 			{
 				// 再生中のみ
 				if (xAudio2Manager->GetIsPlaying(i->first.data()))
@@ -386,7 +392,10 @@ void ImGuiManager::SoundBasePanel()
 				float tmp = (voiceState.SamplesPlayed % (i->second.size / sizeof(short) / i->second.waveFormatEx.nChannels))
 					/ (float)(i->second.size / sizeof(short) / i->second.waveFormatEx.nChannels);
 				ImGui::ProgressBar(tmp, imGuiManagerNS::soundBasePanelProgressBarSize, "");
+			
 			}
+			//プロット
+			imGuiPlotManager->PlotCompressWave(i->first.data(), &i->second);
 			ImGui::EndChild();
 		}
 		ImGui::End();

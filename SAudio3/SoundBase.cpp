@@ -26,7 +26,7 @@ SoundBase::SoundBase()
 		if (!LoadSound(path.c_str(), &soundResource[FindFileData.cFileName]))
 		{
 			// エラーメッセージ
-			MessageBox(NULL, errorNS::SoundResourceError, APP_NAME, (MB_OK | MB_ICONERROR));
+			MessageBox(NULL, errorNS::SoundResourceError, MAIN_APP_NAME, (MB_OK | MB_ICONERROR));
 
 			// 強制終了
 			PostQuitMessage(0);
@@ -48,7 +48,7 @@ SoundBase::SoundBase()
 			if (!LoadSound(path.c_str(),&soundResource[FindFileData.cFileName]))
 			{
 				// エラーメッセージ
-				MessageBox(NULL, errorNS::SoundResourceError, APP_NAME, (MB_OK | MB_ICONERROR));
+				MessageBox(NULL, errorNS::SoundResourceError, MAIN_APP_NAME, (MB_OK | MB_ICONERROR));
 
 				// 強制終了
 				PostQuitMessage(0);
@@ -67,7 +67,7 @@ SoundBase::SoundBase()
 	else
 	{
 		// エラーメッセージ
-		MessageBox(NULL, errorNS::SoundImportError, APP_NAME, (MB_OK | MB_ICONERROR));
+		MessageBox(NULL, errorNS::SoundImportError, MAIN_APP_NAME, (MB_OK | MB_ICONERROR));
 
 #ifndef _DEBUG
 		// 強制終了
@@ -108,7 +108,7 @@ bool SoundBase::LoadSound(const char *path, SoundResource *soundResource)
 		// エラーメッセージ
 		std::string errorMsg = errorNS::SoundReadError;
 		errorMsg += path;
-		MessageBox(NULL, errorMsg.c_str(), APP_NAME, (MB_OK | MB_ICONERROR));
+		MessageBox(NULL, errorMsg.c_str(), MAIN_APP_NAME, (MB_OK | MB_ICONERROR));
 		errorMsg.clear();
 
 		return false;
@@ -123,7 +123,7 @@ bool SoundBase::LoadSound(const char *path, SoundResource *soundResource)
 		// エラーメッセージ
 		std::string errorMsg = errorNS::SoundReadError;
 		errorMsg += path;
-		MessageBox(NULL, errorMsg.c_str(), APP_NAME, (MB_OK | MB_ICONERROR));
+		MessageBox(NULL, errorMsg.c_str(), MAIN_APP_NAME, (MB_OK | MB_ICONERROR));
 		errorMsg.clear();
 	}
 
@@ -175,6 +175,8 @@ bool SoundBase::LoadSound(const char *path, SoundResource *soundResource)
 	soundResource->size = wavFile.data.size;
 	soundResource->data = new short[wavFile.data.size / sizeof(short)];
 	memcpy(soundResource->data, wavFile.data.data, wavFile.data.size);
+	soundResource->isWaveUpdate = true;
+	soundResource->isCompressed = false;
 
 	// 後片付け
 	SAFE_DELETE_ARRAY(wavFile.data.data)

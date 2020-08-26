@@ -8,17 +8,17 @@
 //===================================================================================================================================
 XAudio2Manager::XAudio2Manager(SoundBase *_soundBase)
 {
-	HRESULT hr = E_FAIL;
+	HRESULT hr = S_OK;
 
-	// COMの初期化
-	hr = (CoInitializeEx(nullptr, COINIT_MULTITHREADED));
+	//// COMの初期化
+	//hr = (CoInitializeEx(nullptr, COINIT_MULTITHREADED));
 	if (hr != S_OK)
 	{
 		// エラーメッセージ
 		std::stringstream tmpMsg("");
 		tmpMsg << "0x" << std::hex << hr;
 		std::string errorMsg = errorNS::XAudio2ComInitError + tmpMsg.str();
-		MessageBox(NULL, errorMsg.c_str(), APP_NAME, (MB_OK | MB_ICONERROR));
+		MessageBox(NULL, errorMsg.c_str(), MAIN_APP_NAME, (MB_OK | MB_ICONERROR));
 		tmpMsg.clear();
 		errorMsg.clear();
 
@@ -39,7 +39,7 @@ XAudio2Manager::XAudio2Manager(SoundBase *_soundBase)
 		std::stringstream tmpMsg("");
 		tmpMsg << "0x" << std::hex << hr;
 		std::string errorMsg = errorNS::XAudio2InitError + tmpMsg.str();
-		MessageBox(NULL, errorMsg.c_str(), APP_NAME, (MB_OK | MB_ICONERROR));
+		MessageBox(NULL, errorMsg.c_str(), MAIN_APP_NAME, (MB_OK | MB_ICONERROR));
 		tmpMsg.clear();
 		errorMsg.clear();
 
@@ -130,7 +130,7 @@ IXAudio2MasteringVoice *XAudio2Manager::CreateMasterVoice(IXAudio2 *xAudio2)
 		std::stringstream tmpMsg("");
 		tmpMsg << "0x" << std::hex << hr;
 		std::string errorMsg = errorNS::XAudio2CreateMastering + tmpMsg.str();
-		MessageBox(NULL, errorMsg.c_str(), APP_NAME, (MB_OK | MB_ICONERROR));
+		MessageBox(NULL, errorMsg.c_str(), MAIN_APP_NAME, (MB_OK | MB_ICONERROR));
 		tmpMsg.clear();
 		errorMsg.clear();
 	}

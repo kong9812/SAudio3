@@ -38,7 +38,8 @@
 #define SAFE_RELEASE(p)			if(p){  (p)->Release(); p = NULL; }
 #define SAFE_DELETE(p)			if (p){ delete (p);  p = NULL; }
 #define SAFE_DELETE_ARRAY(p)    if (p){ delete [] (p);  p = NULL; } 
-#define APP_NAME				(LPSTR)"SAudio3"
+#define MAIN_APP_NAME				(LPSTR)"SAudio3"
+#define SUB_APP_NAME				(LPSTR)"SAudio3_SUB"
 #define BYTES_TO_GB(b)			(b) / 1024.0f / 1024.0f / 1024.0f
 
 //===================================================================================================================================

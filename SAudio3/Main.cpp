@@ -37,25 +37,32 @@ INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 WPARAM MessageLoop(Window *window, MSG msg)
 {
 	// ウインドハンドル
-	HWND hWnd = window->GetWindowHwnd();
-
-	// DX11の初期化
-	DirectX11 *directX11 = new DirectX11(hWnd);
-	if (!directX11->Init())
+	HWND hWnd[WINDOWS_ID::MAX_WINDOWS] =
+	{ window->GetWindowHwnd(WINDOWS_ID::MAIN_WINDOWS),
+		window->GetWindowHwnd(WINDOWS_ID::SUB_WINDOWS) };
+	// DX11ハンドル
+	DirectX11 *directX11[WINDOWS_ID::MAX_WINDOWS] = { nullptr };
+	
+	for (int i = 0; i < WINDOWS_ID::MAX_WINDOWS; i++)
 	{
-		// エラーメッセージ
-		MessageBox(NULL, errorNS::DXInitError, APP_NAME, (MB_OK | MB_ICONERROR));
+		// DX11の初期化
+		directX11[i] = new DirectX11(hWnd[i]);
+		if (!directX11[i]->Init())
+		{
+			// エラーメッセージ
+			MessageBox(NULL, errorNS::DXInitError, MAIN_APP_NAME, (MB_OK | MB_ICONERROR));
 
-		// 強制終了
-		PostQuitMessage(0);
+			// 強制終了
+			PostQuitMessage(0);
+		}
 	}
 
 	// アプリプロセスの初期化
-	AppProc *appProc = new AppProc(hWnd,
-		directX11->GetDevice(),
-		directX11->GetDeviceContext(),
-		directX11->GetSwapChain(),
-		directX11->GetRenderTargetView());
+	AppProc *appProc = new AppProc(hWnd[WINDOWS_ID::MAIN_WINDOWS],
+	directX11[WINDOWS_ID::MAIN_WINDOWS]->GetDevice(),
+	directX11[WINDOWS_ID::MAIN_WINDOWS]->GetDeviceContext(),
+	directX11[WINDOWS_ID::MAIN_WINDOWS]->GetSwapChain(),
+	directX11[WINDOWS_ID::MAIN_WINDOWS]->GetRenderTargetView());
 
 	// メッセージループ
 	while (true)
@@ -63,9 +70,9 @@ WPARAM MessageLoop(Window *window, MSG msg)
 		// リサイズ
 		if (window->GetReSizeFlg() == true)
 		{
-			if (directX11->GetDevice() != NULL && window->GetwParam() != SIZE_MINIMIZED)
+			if (directX11[WINDOWS_ID::MAIN_WINDOWS]->GetDevice() != NULL && window->GetwParam() != SIZE_MINIMIZED)
 			{
-				directX11->ReSize(window->GetlParam());
+				directX11[WINDOWS_ID::MAIN_WINDOWS]->ReSize(window->GetlParam());
 				window->SetReSizeFlg(false);
 				appProc->ReSize(true);
 			}
@@ -83,14 +90,17 @@ WPARAM MessageLoop(Window *window, MSG msg)
 		}
 		else
 		{
-			appProc->Update(hWnd);	// 更新処理
-			appProc->Draw(directX11->GetRenderTargetView());	// 描画処理
+			appProc->Update(hWnd[WINDOWS_ID::MAIN_WINDOWS]);	// 更新処理
+			appProc->Draw(directX11[WINDOWS_ID::MAIN_WINDOWS]->GetRenderTargetView());	// 描画処理
 		}
 	}
 
 	// 終了処理
 	SAFE_DELETE(appProc)
-	SAFE_DELETE(directX11)
+	for (int i = 0; i < WINDOWS_ID::MAX_WINDOWS; i++)
+	{
+		SAFE_DELETE(directX11[i])
+	}
 
 	return msg.wParam;
 }

@@ -7,6 +7,7 @@
 #include "TextureBase.h"
 #include "SoundBase.h"
 #include "XAudio2Manager.h"
+#include "ImGuiPlotManager.h"
 
 //===================================================================================================================================
 // ビルドスイッチ
@@ -69,9 +70,10 @@ public:
 	void ShowPanel();
 
 private:
-	TextureBase		*textureBase;		// テクスチャベース
-	SoundBase		*soundBase;			// サウンドベース
-	XAudio2Manager	*xAudio2Manager;	// XAudio2マネージャー
+	TextureBase			*textureBase;		// テクスチャベース
+	SoundBase			*soundBase;			// サウンドベース
+	XAudio2Manager		*xAudio2Manager;	// XAudio2マネージャー
+	ImGuiPlotManager	*imGuiPlotManager;	// [ImGui]プロットマネージャー
 
 	bool showMainPanel;					// [ImGuiフラグ]メインパネル
 	bool showPlayerPanel;				// [ImGuiフラグ]再生パネル

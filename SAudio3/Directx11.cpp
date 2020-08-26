@@ -8,6 +8,9 @@
 //===================================================================================================================================
 DirectX11::DirectX11(HWND hWnd)
 {
+	// COMの初期化
+	CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+
 	// ウインド
 	HWND window_handle = hWnd;	// ウィンドウハンドル
 	RECT rect;					// RECT 構造体
