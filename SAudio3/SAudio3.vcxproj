@@ -142,6 +142,7 @@
   <ItemGroup>
     <ClCompile Include="Directx11.cpp" />
     <ClCompile Include="ImguiManager.cpp" />
+    <ClCompile Include="ImGuiMixerManager.cpp" />
     <ClCompile Include="ImGui\docking\imgui.cpp" />
     <ClCompile Include="ImGui\docking\imgui_demo.cpp" />
     <ClCompile Include="ImGui\docking\imgui_draw.cpp" />
@@ -168,6 +169,7 @@
     </CudaCompile>
     <ClInclude Include="Directx11.h" />
     <ClInclude Include="AppProc.h" />
+    <ClInclude Include="ImGuiMixerManager.h" />
     <ClInclude Include="ImGuiPlotManager.h" />
     <ClInclude Include="icon.h" />
     <ClInclude Include="SoundBase.h" />

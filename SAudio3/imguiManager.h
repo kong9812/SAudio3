@@ -8,6 +8,7 @@
 #include "SoundBase.h"
 #include "XAudio2Manager.h"
 #include "ImGuiPlotManager.h"
+#include "ImGuiMixerManager.h"
 
 //===================================================================================================================================
 // ビルドスイッチ
@@ -19,6 +20,7 @@
 #include "imGui/docking/imgui.h"
 #include "imGui/docking/imgui_impl_win32.h"
 #include "imGui/docking/imgui_impl_dx11.h"
+#include "imGui/docking/imgui_internal.h"
 #else
 #include "imGui/imgui.h"
 #include "imGui/imgui_impl_win32.h"
@@ -65,6 +67,9 @@ public:
 	// [ImGui]新しいフレームの作成
 	void CreateNewFrame();
 
+	// [ImGui]ヘルプマーク
+	void HelpMarker(const char* desc);
+
 	// [ImGui]パネルの表示
 	void ShowPanel(bool reSize, RECT mainPanelSize);
 	void ShowPanel();
@@ -74,10 +79,12 @@ private:
 	SoundBase			*soundBase;			// サウンドベース
 	XAudio2Manager		*xAudio2Manager;	// XAudio2マネージャー
 	ImGuiPlotManager	*imGuiPlotManager;	// [ImGui]プロットマネージャー
+	ImGuiMixerManager	*imGuiMixerManager;	// [ImGui]ミクサーマネージャー
 
 	bool showMainPanel;					// [ImGuiフラグ]メインパネル
 	bool showPlayerPanel;				// [ImGuiフラグ]再生パネル
 	bool showSoundBasePanel;			// [ImGuiフラグ]サウンドベースパネル
+	bool showMixerPanel;				// [ImGuiフラグ]サウンドベースパネル
 	bool isPlaying;						// [プレイヤーパネル]再生中??
 	bool isMasteringVoiceVolumeOver1;	// マスターボイスのボリュームが1を超えられる?
 

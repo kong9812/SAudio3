@@ -180,6 +180,7 @@ void Window::ShowWnd(int nCmdShow)
 		ShowWindow(hWnd[i], nCmdShow);
 		UpdateWindow(hWnd[i]);
 	}
+	ShowWindow(hWnd[WINDOWS_ID::SUB_WINDOWS], SW_MINIMIZE);
 }
 
 //===================================================================================================================================

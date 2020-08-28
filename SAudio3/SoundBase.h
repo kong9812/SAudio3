@@ -59,6 +59,7 @@ struct SoundResource
 {
 	bool isWaveUpdate;		// 波形の再描画が必要?(初期値:true)
 	bool isCompressed;		// 圧縮完了?(初期値:false)
+	bool isMix;				// ミックスに使う?(初期値:false)
 	long size;
 	short *data;
 	WAVEFORMATEX waveFormatEx;

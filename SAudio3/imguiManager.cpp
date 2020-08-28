@@ -54,6 +54,7 @@ ImGuiManager::ImGuiManager(HWND hWnd, ID3D11Device *device,
 	showMainPanel = true;
 	showPlayerPanel = true;
 	showSoundBasePanel = true;
+	showMixerPanel = true;
 
 	isPlaying = false;
 	isMasteringVoiceVolumeOver1 = false;
@@ -68,6 +69,22 @@ ImGuiManager::ImGuiManager(HWND hWnd, ID3D11Device *device,
 
 	// プロットマネージャー
 	imGuiPlotManager = new ImGuiPlotManager;
+
+	// ミクサーマネージャー
+	imGuiMixerManager = new ImGuiMixerManager(_textureBase);
+}
+
+//===================================================================================================================================
+// デストラクタ
+//===================================================================================================================================
+ImGuiManager::~ImGuiManager()
+{
+	// [ImGui]終了処理
+	SAFE_DELETE(imGuiPlotManager)
+	SAFE_DELETE(imGuiMixerManager)
+	ImGui_ImplDX11_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
 }
 
 //===================================================================================================================================
@@ -81,24 +98,28 @@ void ImGuiManager::CreateNewFrame()
 }
 
 //===================================================================================================================================
-// デストラクタ
-//===================================================================================================================================
-ImGuiManager::~ImGuiManager()
-{
-	// [ImGui]終了処理
-	SAFE_DELETE(imGuiPlotManager)
-	ImGui_ImplDX11_Shutdown();
-	ImGui_ImplWin32_Shutdown();
-	ImGui::DestroyContext();
-}
-
-//===================================================================================================================================
 // [ImGui]リサイズ
 //===================================================================================================================================
 void ImGuiManager::ReSize(LONG right, LONG bottom)
 {
 	ImGui::SetNextWindowPos(ImVec2(0, 0));
 	ImGui::SetNextWindowSize(ImVec2(right, bottom));
+}
+
+//===================================================================================================================================
+// [ImGui]ヘルプマーク
+//===================================================================================================================================
+void ImGuiManager::HelpMarker(const char* desc)
+{
+	ImGui::TextDisabled("(?)");
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::BeginTooltip();
+		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+		ImGui::TextUnformatted(desc);
+		ImGui::PopTextWrapPos();
+		ImGui::EndTooltip();
+	}
 }
 
 //===================================================================================================================================
@@ -131,7 +152,7 @@ void ImGuiManager::ShowPanel()
 void ImGuiManager::MainPanel()
 {
 	// データカウンターリセット
-	imGuiPlotManager->ResetDataCnt();
+	//imGuiPlotManager->ResetDataCnt();
 
 	// メインパネル
 	if (showMainPanel)
@@ -167,6 +188,9 @@ void ImGuiManager::MainPanel()
 
 	// サウンドベースパネル
 	SoundBasePanel();
+
+	// ミクサーパネル
+	imGuiMixerManager->MixerPanel(&showMixerPanel);
 }
 
 //===================================================================================================================================
@@ -254,7 +278,8 @@ void ImGuiManager::MenuBar()
 		if (ImGui::BeginMenu("Window"))
 		{
 			ImGui::MenuItem("Player", "", &showPlayerPanel);
-			ImGui::MenuItem("Sound Base", "", &showSoundBasePanel);		
+			ImGui::MenuItem("Sound Base", "", &showSoundBasePanel);	
+			ImGui::MenuItem("Mixer", "", &showMixerPanel);		
 			ImGui::EndMenu();
 		}
 
@@ -305,8 +330,10 @@ void ImGuiManager::MasteringVoiceVolumePanel()
 {
 	// マスターボイスボリューム
 	ImGui::Checkbox("-Over Volume-", &isMasteringVoiceVolumeOver1);
-	ImGui::Text(u8"#ボリュームを1より大きく設定したい時にチェックを入れてください");
-	ImGui::Text(u8"(音割れが発生するかもしれません)");
+	ImGui::SameLine();
+	HelpMarker(u8"ボリュームを1より大きく設定したい時にチェックを入れてください"
+		u8"(音割れが発生するかもしれません)");
+
 	float tmpVolume = xAudio2Manager->GetMasteringVoiceVolumeLevel();
 	if (tmpVolume == xAudioManagerNS::minVolume)
 	{
@@ -358,45 +385,50 @@ void ImGuiManager::SoundBasePanel()
 		auto end = soundBase->soundResource.end();
 		for (auto i = begin; i != end; i++)
 		{
-			// 画面サイズの制限・2個目のボタンが反応しない対応
-			if (ImGui::BeginChild(i->first.data(), ImVec2(ImGui::GetWindowSize().x - 100, 300)))
+			// チェックボックス
+			bool oldIsMix = i->second.isMix;
+			ImGui::PushID(i->first.c_str());
+			ImGui::Checkbox("Mix", &i->second.isMix);
+			ImGui::PopID();
+			ImGui::SameLine();
+			if (oldIsMix != i->second.isMix)
 			{
-				// 再生中のみ
-				if (xAudio2Manager->GetIsPlaying(i->first.data()))
-				{
-					// 再生ボタン
-					if (ImGui::ImageButton((void*)textureBase->GetShaderResource((char *)"playButton.png"), imGuiManagerNS::buttonSize))
-					{
-						// 再生・一時停止
-						xAudio2Manager->PlayPauseSourceVoice(nullptr, i->first.data());
-					}
-				}
-				else
-				{
-					// 一時停止ボタン
-					if (ImGui::ImageButton((void*)textureBase->GetShaderResource((char *)"pauseButton.png"), imGuiManagerNS::buttonSize))
-					{
-						// 再生・一時停止
-						xAudio2Manager->PlayPauseSourceVoice(nullptr, i->first.data());
-					}
-				}
-
-				// サウンド名
-				ImGui::SameLine();
-				ImGui::Text("%s", i->first.data());
-
-				// 再生位置
-				XAUDIO2_VOICE_STATE voiceState = xAudio2Manager->GetVoiceState(i->first.data());
-				ImGui::SameLine();
-				ImGui::Text("-Played Samples-:%d", voiceState.SamplesPlayed % (i->second.size / sizeof(short) / i->second.waveFormatEx.nChannels));
-				float tmp = (voiceState.SamplesPlayed % (i->second.size / sizeof(short) / i->second.waveFormatEx.nChannels))
-					/ (float)(i->second.size / sizeof(short) / i->second.waveFormatEx.nChannels);
-				ImGui::ProgressBar(tmp, imGuiManagerNS::soundBasePanelProgressBarSize, "");
-			
+				imGuiMixerManager->SetMixerResource(i->first, i->second.isMix);
 			}
+
+			// 再生中のみ
+			if (xAudio2Manager->GetIsPlaying(i->first.data()))
+			{
+				// 再生ボタン
+				if (ImGui::ImageButtonEx(ImGui::GetID(i->first.c_str()), (void*)textureBase->GetShaderResource((char *)"pauseButton.png"), imGuiManagerNS::buttonSize, ImVec2(-1, 0), ImVec2(0, 1), ImVec2(0, 0), ImVec4(1.0f, 1.0f, 1.0f, 0.0f), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
+				{
+					// 再生・一時停止
+					xAudio2Manager->PlayPauseSourceVoice(nullptr, i->first.data());
+				}
+			}
+			else
+			{
+				// 一時停止ボタン
+				if (ImGui::ImageButtonEx(ImGui::GetID(i->first.c_str()), (void*)textureBase->GetShaderResource((char *)"playButton.png"), imGuiManagerNS::buttonSize, ImVec2(-1, 0), ImVec2(0, 1), ImVec2(0, 0), ImVec4(1.0f, 1.0f, 1.0f, 0.0f), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
+				{
+					// 再生・一時停止
+					xAudio2Manager->PlayPauseSourceVoice(nullptr, i->first.data());
+				}
+			}
+			// サウンド名
+			ImGui::SameLine();
+			ImGui::Text("%s", i->first.data());
+
+			// 再生位置
+			XAUDIO2_VOICE_STATE voiceState = xAudio2Manager->GetVoiceState(i->first.data());
+			ImGui::SameLine();
+			ImGui::Text("-Played Samples-:%d", voiceState.SamplesPlayed % (i->second.size / sizeof(short) / i->second.waveFormatEx.nChannels));
+			float tmp = (voiceState.SamplesPlayed % (i->second.size / sizeof(short) / i->second.waveFormatEx.nChannels))
+				/ (float)(i->second.size / sizeof(short) / i->second.waveFormatEx.nChannels);
+			ImGui::ProgressBar(tmp, imGuiManagerNS::soundBasePanelProgressBarSize, "");
+
 			//プロット
 			imGuiPlotManager->PlotCompressWave(i->first.data(), &i->second);
-			ImGui::EndChild();
 		}
 		ImGui::End();
 	}

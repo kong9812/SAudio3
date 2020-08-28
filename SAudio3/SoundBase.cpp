@@ -177,6 +177,7 @@ bool SoundBase::LoadSound(const char *path, SoundResource *soundResource)
 	memcpy(soundResource->data, wavFile.data.data, wavFile.data.size);
 	soundResource->isWaveUpdate = true;
 	soundResource->isCompressed = false;
+	soundResource->isMix = false;
 
 	// Œã•Ð•t‚¯
 	SAFE_DELETE_ARRAY(wavFile.data.data)

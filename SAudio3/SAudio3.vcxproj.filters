@@ -62,6 +62,9 @@
     <Filter Include="ソース ファイル\CUDA">
       <UniqueIdentifier>{b5ce0de9-964a-4de3-9f5b-726dc9f840d8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\ImGui\ImGuiMixerManager">
+      <UniqueIdentifier>{b43e0f9a-9262-4794-9bd8-d74274ef5e71}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Directx11.h">
@@ -145,6 +148,9 @@
     <ClInclude Include="icon.h">
       <Filter>ソース ファイル\Icon</Filter>
     </ClInclude>
+    <ClInclude Include="ImGuiMixerManager.h">
+      <Filter>ソース ファイル\ImGui\ImGuiMixerManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Directx11.cpp">
@@ -209,6 +215,9 @@
     </ClCompile>
     <ClCompile Include="ImGuiPlotManager.cpp">
       <Filter>ソース ファイル\ImGui\ImGuiPlotManager</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGuiMixerManager.cpp">
+      <Filter>ソース ファイル\ImGui\ImGuiMixerManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
