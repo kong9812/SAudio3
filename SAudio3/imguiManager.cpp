@@ -337,8 +337,7 @@ void ImGuiManager::MasteringVoiceVolumePanel()
 	float tmpVolume = xAudio2Manager->GetMasteringVoiceVolumeLevel();
 	if (tmpVolume == xAudioManagerNS::minVolume)
 	{
-		ImGui::Text("Main Volume(Mastering Voice Volume(Level))              Volume(db):MIN",
-			XAudio2AmplitudeRatioToDecibels(tmpVolume));
+		ImGui::Text("Main Volume(Mastering Voice Volume(Level))              Volume(db):MIN");
 	}
 	else
 	{

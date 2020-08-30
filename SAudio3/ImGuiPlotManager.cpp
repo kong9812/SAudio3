@@ -22,6 +22,17 @@ ImGuiPlotManager::~ImGuiPlotManager()
 	// 連想配列の削除
 	if (compressData.size() > NULL)
 	{
+		auto begin = compressData.begin();
+		auto end = compressData.end();
+		for (auto i = begin; i != end; i++)
+		{
+			// [チャンネルごと]データ部の削除
+			for (int j = 0; j < i->second.channel; j++)
+			{
+				SAFE_DELETE_ARRAY(i->second.data[j])
+			}
+			SAFE_DELETE(i->second.data)
+		}
 		compressData.clear();
 	}
 	SAFE_DELETE(cudaCalc)
@@ -37,7 +48,10 @@ void ImGuiPlotManager::PlotCompressWave(std::string soundName, SoundResource *so
 		// プロット
 		Compress_Data *tmpCompressData = &compressData[soundName];
 		ImVec2 plotextent(ImGui::GetContentRegionAvailWidth(), 100);
-		ImGui::PlotLines("", tmpCompressData->data, CUDACalcNS::compressSize, 0, "", FLT_MAX, FLT_MAX, plotextent);
+		for (int i = 0; i < soundResource->waveFormatEx.nChannels; i++)
+		{
+			ImGui::PlotLines("", tmpCompressData->data[i], CUDACalcNS::compressSize, 0, "", FLT_MAX, FLT_MAX, plotextent);
+		}
 		ImGui::Text("usedTime:%d", tmpCompressData->usedTime);
 		ImGui::Text("size:%ld", soundResource->size);
 	}
@@ -50,7 +64,7 @@ void ImGuiPlotManager::PlotCompressWave(std::string soundName, SoundResource *so
 		//ImGui::Text("readPos:%ld", tmpCompressData->readPos);
 		//ImGui::Text("dataPos:%d", tmpCompressData->dataPos);
 		//ImGui::Text("size:%ld", soundResource->size);
-		cudaCalc->Kernel(soundResource->data, soundResource->size, &compressData[soundName]);
+		compressData[soundName] = cudaCalc->compressor(soundResource->data, soundResource->size, soundResource->waveFormatEx.nChannels);
 		soundResource->isWaveUpdate = !soundResource->isWaveUpdate;
 		soundResource->isCompressed = !soundResource->isCompressed;
 	}

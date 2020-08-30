@@ -52,8 +52,15 @@ private:
 	Mixer_Data	mixerData;		// ミクサーデータ
 	TextureBase	*textureBase;	// テクスチャベース
 
-
 	// ミクサーパラメーターの作成
 	Mixer_Parameter CreateMixerParameter(Mixer_Resource mixResourceData);
 
+	// [パーツ]再生プレイヤー
+	void MixerPartPlayer(std::list<Mixer_Parameter>::iterator mixerParameter, float buttomSize);
+
+	// [パーツ]削除ボタン
+	void MixerPartDelete(bool deleteButton);
+
+	// [パーツ]ミクサー
+	void MixerPartMixer(std::list<Mixer_Parameter>::iterator mixerParameter);
 };

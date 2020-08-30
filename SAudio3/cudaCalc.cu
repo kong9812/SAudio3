@@ -6,27 +6,30 @@
 //===================================================================================================================================
 // プロトタイプ宣言
 //===================================================================================================================================
-__global__ void CompressWave(float *fData, short *sData, int compressBlock);
-__device__ void Compress(float *fData, short *sData, int compressBlock);
+__global__ void CompressWave(float *fData, short *sData, int compressBlock, int allChannel, int processChannel);
+__device__ void Compress(float *fData, short *sData, int compressBlock, int allChannel, int processChannel);
 
 //===================================================================================================================================
 // [CPU->GPU]圧縮処理
 //===================================================================================================================================
-__global__ void CompressWave(float *fData, short *sData, int compressBlock)
+__global__ void CompressWave(float *fData, short *sData, int compressBlock, int allChannel, int processChannel)
 {
-	Compress(fData, sData, compressBlock);
+	// [GPU]圧縮処理
+	Compress(fData, sData, compressBlock, allChannel, processChannel);
 }
 
 //===================================================================================================================================
 // [GPU]圧縮処理
 //===================================================================================================================================
-__device__ void Compress(float *fData, short *sData, int compressBlock)
+__device__ void Compress(float *fData, short *sData, int compressBlock, int allChannel, int processChannel)
 {
-	int idx = blockIdx.x * blockDim.x + threadIdx.x;
+	// 処理中のチャンネル : blockIdx.x
+	int idx = blockIdx.x * blockDim.x + threadIdx.x;	// MAX:1024
+
 	long tmpData = 0;
 	for (int i = 0; i < compressBlock; i++)
 	{
-		tmpData += sData[i + (idx * compressBlock)];
+		tmpData += sData[((i + (threadIdx.x * compressBlock))*allChannel) + processChannel];
 	}
 	fData[idx] = (float)tmpData / compressBlock;
 }
@@ -34,48 +37,57 @@ __device__ void Compress(float *fData, short *sData, int compressBlock)
 //===================================================================================================================================
 // カーネル CPU<->GPU
 //===================================================================================================================================
-void CUDA_CALC::Kernel(short *_data, long _size, Compress_Data *_compressData)
+Compress_Data CUDA_CALC::compressor(short *_data, long _size, int channel)
 {
-	//スレッドの設定
-	int gridSizeX = CUDACalcNS::compressSize / CUDACalcNS::blocksizeX;
-	if (gridSizeX < CUDACalcNS::gridMaxX)
+	Compress_Data tmpCompressData = { NULL };
+	tmpCompressData.channel = channel;
+
+	// プロセス
+	dim3 block(CUDACalcNS::threadX, 1, 1);
+	dim3 grid(1, 1, 1);
+
+	// 圧縮量
+	tmpCompressData.compressBlock = ((_size / tmpCompressData.channel / sizeof(short)) / CUDACalcNS::compressSize);
+
+	// デバイスメモリ確保(GPU)
+	float *fData = nullptr;
+	size_t pitch = NULL;
+	cudaError_t hr = cudaMalloc((void **)&fData, sizeof(float)*CUDACalcNS::compressSize);
+
+	short *sData = nullptr;
+	hr = cudaMalloc((void **)&sData, _size);
+	hr = cudaMemset(sData, 0, _size);
+
+	// ホスト->デバイス
+	hr = cudaMemcpy(sData, &_data[0], _size, cudaMemcpyKind::cudaMemcpyHostToDevice);
+
+	// カーネル+デバイス->ホスト
+	tmpCompressData.startTime = timeGetTime();
+	tmpCompressData.data = new float *[tmpCompressData.channel];
+	for (int i = 0; i < tmpCompressData.channel; i++)
 	{
-		// プロセス
-		dim3 grid(gridSizeX, 1, 1);
-		dim3 block(CUDACalcNS::blocksizeX, 1, 1);
+		// メモリリセット
+		hr = cudaMemset(fData, NULL, sizeof(float)*CUDACalcNS::compressSize);
 
-		// 圧縮量
-		_compressData->compressBlock = ((_size / sizeof(short)) / CUDACalcNS::compressSize);
-
-		// デバイスメモリ確保(GPU)
-		float *fData = nullptr;
-		cudaError_t hr = cudaMalloc((void **)&fData, CUDACalcNS::compressSize * sizeof(float));
-		hr = cudaMemset(fData, 0, CUDACalcNS::compressSize * sizeof(float));
-		short *sData = nullptr;
-		hr = cudaMalloc((void **)&sData, _size);
-		hr = cudaMemset(sData, 0, _size);
-
-		// ホスト->デバイス
-		hr = cudaMemcpy(sData, &_data[0], _size, cudaMemcpyHostToDevice);
-
-		_compressData->startTime = timeGetTime();
-		CompressWave <<<grid, block>>> (fData, sData, _compressData->compressBlock);
-		_compressData->usedTime = timeGetTime() - _compressData->startTime;
-
-		hr = cudaMemcpy(_compressData->data, &fData[0], CUDACalcNS::compressSize * sizeof(float), cudaMemcpyDeviceToHost);
-
-		// 後片付け
-		cudaFree(fData);
-		cudaFree(sData);
+		tmpCompressData.data[i] = new float[CUDACalcNS::compressSize];
+		memset(tmpCompressData.data[i], NULL, sizeof(float)*CUDACalcNS::compressSize);
+		// カーネル
+		CompressWave << <grid, block >> > (fData, sData, tmpCompressData.compressBlock, channel, i);
+		hr = cudaMemcpy(tmpCompressData.data[i], &fData[0], sizeof(float)*CUDACalcNS::compressSize, cudaMemcpyDeviceToHost);
 	}
+	tmpCompressData.usedTime = timeGetTime() - tmpCompressData.startTime;
+
+	// 後片付け
+	hr = cudaFree(fData);
+	hr = cudaFree(sData);
+
+	return tmpCompressData;
 }
 
 //===================================================================================================================================
-// テスト用プロット
+// 正規化
 //===================================================================================================================================
-//void CUDA_CALC::tmpPlot(void)
-//{
-//	ImVec2 plotextent(ImGui::GetContentRegionAvailWidth(), 100);
-//	ImGui::PlotLines("", tmpPlotData, 10240, 0, "", FLT_MAX, FLT_MAX, plotextent);
-//	ImGui::Text("CUDA usedTime:%d", usedTime);
-//}
+short *CUDA_CALC::normalizer(short *_data, short sampleRate)
+{
+	return nullptr;
+}

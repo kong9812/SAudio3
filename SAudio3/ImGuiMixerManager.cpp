@@ -58,6 +58,26 @@ void ImGuiMixerManager::SetMixerResource(std::string soundName,bool addUse)
 }
 
 //===================================================================================================================================
+// ミクサーパラメーターの作成
+//===================================================================================================================================
+Mixer_Parameter ImGuiMixerManager::CreateMixerParameter(Mixer_Resource mixResourceData)
+{
+	// ミクサーパラメーターの初期化
+	Mixer_Parameter tmpData;
+	tmpData.soundName = mixResourceData.soundName + std::to_string(mixResourceData.cnt);
+	tmpData.fadeInMs = NULL;
+	tmpData.fadeInPos = NULL;
+	tmpData.fadeOutMs = NULL;
+	tmpData.fadeOutPos = NULL;
+	tmpData.isPlaying = false;
+	tmpData.isFade = false;
+
+	tmpData.playingPos = rand() % 10 / 10.0f;
+
+	return tmpData;
+}
+
+//===================================================================================================================================
 // ミクサーパネル
 //===================================================================================================================================
 void ImGuiMixerManager::MixerPanel(bool *showMixerPanael)
@@ -99,37 +119,19 @@ void ImGuiMixerManager::MixerPanel(bool *showMixerPanael)
 					ImGui::PushID(i->soundName.c_str());
 					ImVec2 tmpTextSize = ImGui::CalcTextSize(i->soundName.c_str());
 					int mixerParametersSizeX = tmpTextSize.x + 250;
-
 					ImGui::SetColumnWidth(idx, mixerParametersSizeX);
-					if (i->isPlaying == true)
-					{
-						if (ImGui::ImageButtonEx(ImGui::GetID(i->soundName.c_str()), (void*)textureBase->GetShaderResource((char *)"pauseButton.png"), ImVec2(tmpTextSize.y, tmpTextSize.y), ImVec2(-1, 0), ImVec2(0, 1), ImVec2(0, 0), ImVec4(1.0f, 1.0f, 1.0f, 0.0f), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
-						{
-							i->isPlaying = false;
-						}
-					}
-					else
-					{
-						if (ImGui::ImageButtonEx(ImGui::GetID(i->soundName.c_str()), (void*)textureBase->GetShaderResource((char *)"playButton.png"), ImVec2(tmpTextSize.y, tmpTextSize.y), ImVec2(-1, 0), ImVec2(0, 1), ImVec2(0, 0), ImVec4(1.0f, 1.0f, 1.0f, 0.0f), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
-						{
-							i->isPlaying = true;
-						}
-					}
+
+					// [パーツ]再生プレイヤー
+					MixerPartPlayer(i, tmpTextSize.y);
+
 					ImGui::SameLine();
-					ImGui::Text(i->soundName.c_str());
-					ImGui::SameLine();
-					ImGui::Button("Del");
-					ImGui::PushItemWidth(200);
-					ImGui::SliderInt("In Pos(S)", &i->fadeInPos, 0.0f, 200.0f);
-					ImGui::ProgressBar(i->playingPos,
-						ImVec2(200,imGuiManagerNS::soundBasePanelProgressBarSize.y), "");
-					ImGui::SliderInt("Out Pos(S)", &i->fadeOutPos, 0.0f, 200.0f);
-					ImGui::Checkbox("Cross Fade", &i->isFade);
-					if (i->isFade)
-					{
-						ImGui::SliderInt("Fade In Time(S)", &i->fadeInMs, 0.0f, 200.0f);
-						ImGui::SliderInt("Fade Out Time(S)", &i->fadeOutMs, 0.0f, 200.0f);
-					}
+
+					// [パーツ]削除ボタン
+					MixerPartDelete(ImGui::Button("Del"));
+
+					// [パーツ]ミクサー
+					MixerPartMixer(i);
+
 					ImGui::NextColumn();
 					idx++;
 					ImGui::PopID();
@@ -147,21 +149,58 @@ void ImGuiMixerManager::MixerPanel(bool *showMixerPanael)
 }
 
 //===================================================================================================================================
-// ミクサーパラメーターの作成
+// [パーツ]再生プレイヤー
 //===================================================================================================================================
-Mixer_Parameter ImGuiMixerManager::CreateMixerParameter(Mixer_Resource mixResourceData)
+void ImGuiMixerManager::MixerPartPlayer(std::list<Mixer_Parameter>::iterator mixerParameter, float buttomSize)
 {
-	// ミクサーパラメーターの初期化
-	Mixer_Parameter tmpData;
-	tmpData.soundName = mixResourceData.soundName + std::to_string(mixResourceData.cnt);
-	tmpData.fadeInMs = NULL;
-	tmpData.fadeInPos = NULL;
-	tmpData.fadeOutMs = NULL;
-	tmpData.fadeOutPos = NULL;
-	tmpData.isPlaying = false;
-	tmpData.isFade = false;
+	if (mixerParameter->isPlaying)
+	{
+		if (ImGui::ImageButtonEx(ImGui::GetID(mixerParameter->soundName.c_str()),
+			(void*)textureBase->GetShaderResource((char *)"pauseButton.png"),
+			ImVec2(buttomSize, buttomSize), ImVec2(-1, 0), ImVec2(0, 1), ImVec2(0, 0),
+			ImVec4(1.0f, 1.0f, 1.0f, 0.0f), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
+		{
+			mixerParameter->isPlaying = !mixerParameter->isPlaying;
+		}
+	}
+	else
+	{
+		if (ImGui::ImageButtonEx(ImGui::GetID(mixerParameter->soundName.c_str()),
+			(void*)textureBase->GetShaderResource((char *)"playButton.png"),
+			ImVec2(buttomSize, buttomSize), ImVec2(-1, 0), ImVec2(0, 1), ImVec2(0, 0),
+			ImVec4(1.0f, 1.0f, 1.0f, 0.0f), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
+		{
+			mixerParameter->isPlaying = !mixerParameter->isPlaying;
+		}
+	}
+	ImGui::SameLine();
 
-	tmpData.playingPos = rand() % 10 / 10.0f;
+	// サウンド名
+	ImGui::Text(mixerParameter->soundName.c_str());
+}
 
-	return tmpData;
+//===================================================================================================================================
+// [パーツ]削除ボタン
+//===================================================================================================================================
+void ImGuiMixerManager::MixerPartDelete(bool deleteButton)
+{
+
+}
+
+//===================================================================================================================================
+// [パーツ]ミクサー
+//===================================================================================================================================
+void ImGuiMixerManager::MixerPartMixer(std::list<Mixer_Parameter>::iterator mixerParameter)
+{
+	ImGui::PushItemWidth(200);
+	ImGui::SliderInt("In Pos(S)", &mixerParameter->fadeInPos, 0.0f, 200.0f);
+	ImGui::ProgressBar(mixerParameter->playingPos,
+		ImVec2(200, imGuiManagerNS::soundBasePanelProgressBarSize.y), "");
+	ImGui::SliderInt("Out Pos(S)", &mixerParameter->fadeOutPos, 0.0f, 200.0f);
+	ImGui::Checkbox("Cross Fade", &mixerParameter->isFade);
+	if (mixerParameter->isFade)
+	{
+		ImGui::SliderInt("Fade In Time(S)", &mixerParameter->fadeInMs, 0.0f, 200.0f);
+		ImGui::SliderInt("Fade Out Time(S)", &mixerParameter->fadeOutMs, 0.0f, 200.0f);
+	}
 }

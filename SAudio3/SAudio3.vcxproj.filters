@@ -65,6 +65,9 @@
     <Filter Include="ソース ファイル\ImGui\ImGuiMixerManager">
       <UniqueIdentifier>{b43e0f9a-9262-4794-9bd8-d74274ef5e71}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\SoundCore\SampleRateNormalizer">
+      <UniqueIdentifier>{69c9f735-f6dc-4be7-a327-aac3c566bbcc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Directx11.h">
@@ -151,6 +154,9 @@
     <ClInclude Include="ImGuiMixerManager.h">
       <Filter>ソース ファイル\ImGui\ImGuiMixerManager</Filter>
     </ClInclude>
+    <ClInclude Include="SampleRateNormalizer.h">
+      <Filter>ソース ファイル\SoundCore\SampleRateNormalizer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Directx11.cpp">
@@ -218,6 +224,9 @@
     </ClCompile>
     <ClCompile Include="ImGuiMixerManager.cpp">
       <Filter>ソース ファイル\ImGui\ImGuiMixerManager</Filter>
+    </ClCompile>
+    <ClCompile Include="SampleRateNormalizer.cpp">
+      <Filter>ソース ファイル\SoundCore\SampleRateNormalizer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
