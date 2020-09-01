@@ -195,14 +195,14 @@ void ImGuiMixerManager::MixerPartDelete(bool deleteButton)
 void ImGuiMixerManager::MixerPartMixer(std::list<Mixer_Parameter>::iterator mixerParameter)
 {
 	ImGui::PushItemWidth(200);
-	ImGui::SliderInt("In Pos(S)", &mixerParameter->fadeInPos, 0.0f, 200.0f);
+	ImGui::SliderFloat("In Pos(S)", &mixerParameter->fadeInPos, 0.0f, 200.0f);
 	ImGui::ProgressBar(mixerParameter->playingPos,
 		ImVec2(200, imGuiManagerNS::soundBasePanelProgressBarSize.y), "");
-	ImGui::SliderInt("Out Pos(S)", &mixerParameter->fadeOutPos, 0.0f, 200.0f);
+	ImGui::SliderFloat("Out Pos(S)", &mixerParameter->fadeOutPos, 0.0f, 200.0f);
 	ImGui::Checkbox("Cross Fade", &mixerParameter->isFade);
 	if (mixerParameter->isFade)
 	{
-		ImGui::SliderInt("Fade In Time(S)", &mixerParameter->fadeInMs, 0.0f, 200.0f);
-		ImGui::SliderInt("Fade Out Time(S)", &mixerParameter->fadeOutMs, 0.0f, 200.0f);
+		ImGui::SliderFloat("Fade In Time(ms)", &mixerParameter->fadeInMs, 0.0f, 200.0f);
+		ImGui::SliderFloat("Fade Out Time(ms)", &mixerParameter->fadeOutMs, 0.0f, 200.0f);
 	}
 }

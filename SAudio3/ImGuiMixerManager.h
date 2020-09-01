@@ -21,16 +21,16 @@ struct Mixer_Parameter
 	bool	isFade;
 	bool	isPlaying;
 	float	playingPos;
-	int		fadeInPos;
-	int		fadeOutPos;
-	int		fadeInMs;
-	int		fadeOutMs;
+	float	fadeInPos;
+	float	fadeOutPos;
+	float	fadeInMs;
+	float	fadeOutMs;
 };
 
 struct Mixer_Data
 {
 	std::list<Mixer_Resource> mixerResource;	// ミクサーリソース
-	std::list<Mixer_Parameter> mixerParameter;		// ミクサーパラメーター
+	std::list<Mixer_Parameter> mixerParameter;	// ミクサーパラメーター
 };
 
 //===================================================================================================================================

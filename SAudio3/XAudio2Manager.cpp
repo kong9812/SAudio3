@@ -262,3 +262,17 @@ XAUDIO2_VOICE_STATE XAudio2Manager::GetVoiceState(std::string voiceName)
 
 	return voiceState;
 }
+
+//===================================================================================================================================
+// ƒ{ƒCƒXÚ×
+//===================================================================================================================================
+XAUDIO2_VOICE_DETAILS XAudio2Manager::GetVoiceDetails(std::string voiceName)
+{
+	XAUDIO2_VOICE_DETAILS voiceDetails = { NULL };
+
+	if (voiceResource.count(voiceName) > NULL)
+	{
+		voiceResource[voiceName].sourceVoice->GetVoiceDetails(&voiceDetails);
+	}
+	return voiceDetails;
+}

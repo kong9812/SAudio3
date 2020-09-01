@@ -27,8 +27,12 @@ class XAudio2EffectManager
 public:
 	XAudio2EffectManager();
 	~XAudio2EffectManager();
-private:
-	IUnknown **XApo;
-	XAUDIO2_EFFECT_DESCRIPTOR effectDescriptor;
 
+	// エフェクトの設置・解除
+	HRESULT SetXapoEffect(IXAudio2SourceVoice *sourceVoice, XAPO_LIST xapoID,
+		int effectCnt, std::list<XAPO_LIST> effectList, bool isUse);
+
+private:
+	// XAPOs
+	IUnknown **XApo;
 };

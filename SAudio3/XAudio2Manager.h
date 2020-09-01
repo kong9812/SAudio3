@@ -32,7 +32,9 @@ namespace xAudioManagerNS
 //===================================================================================================================================
 struct VoiceResource
 {
-	bool isPlaying;
+	bool isPlaying;							// 再生状態
+	int effectCnt;							// エフェクトの個数
+	std::list<XAPO_LIST> effectList;		// エフェクトのリスト
 	IXAudio2SourceVoice *sourceVoice;
 };
 
@@ -64,6 +66,9 @@ public:
 
 	// ボイス状態
 	XAUDIO2_VOICE_STATE GetVoiceState(std::string voiceName);
+
+	// ボイス詳細
+	XAUDIO2_VOICE_DETAILS GetVoiceDetails(std::string voiceName);
 
 private:
 	SoundBase				*soundBase;							// サウンドベース

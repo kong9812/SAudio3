@@ -425,6 +425,12 @@ void ImGuiManager::SoundBasePanel()
 			float tmp = (voiceState.SamplesPlayed % (i->second.size / sizeof(short) / i->second.waveFormatEx.nChannels))
 				/ (float)(i->second.size / sizeof(short) / i->second.waveFormatEx.nChannels);
 			ImGui::ProgressBar(tmp, imGuiManagerNS::soundBasePanelProgressBarSize, "");
+			
+			XAUDIO2_VOICE_DETAILS voiceDetails = xAudio2Manager->GetVoiceDetails(i->first.data());
+			if (voiceDetails.InputChannels != NULL)
+			{
+				ImGui::Text("-Input Channels-:%d   -Input SampleRate-:%d", voiceDetails.InputChannels, voiceDetails.InputSampleRate);
+			}
 
 			//ƒvƒƒbƒg
 			imGuiPlotManager->PlotCompressWave(i->first.data(), &i->second);
