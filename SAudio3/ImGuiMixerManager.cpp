@@ -42,11 +42,6 @@ void ImGuiMixerManager::SetMixerResource(std::string soundName,bool addUse)
 	tmpData.soundName = soundName;
 	tmpData.cnt = NULL;
 
-	// ³‹K‰»[ƒeƒXƒg]
-	SampleRateNormalizer *normalizer = new SampleRateNormalizer;
-	normalizer->SetSampleRate(&soundBase->soundResource[soundName], 48000);
-	SAFE_DELETE(normalizer)
-
 	// ’Ç‰Á
 	if (addUse)
 	{

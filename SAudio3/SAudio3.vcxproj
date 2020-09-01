@@ -161,8 +161,10 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="AppProc.cpp" />
     <ClCompile Include="SampleRateNormalizer.cpp" />
+    <ClCompile Include="SAudio3FadeXapo.cpp" />
     <ClCompile Include="SoundBase.cpp" />
     <ClCompile Include="ImGuiPlotManager.cpp" />
+    <ClCompile Include="XAudio2EffectManager.cpp" />
     <ClCompile Include="XAudio2Manager.cpp" />
     <ClCompile Include="TextureBase.cpp" />
     <ClCompile Include="Window.cpp" />
@@ -177,7 +179,9 @@
     <ClInclude Include="ImGuiPlotManager.h" />
     <ClInclude Include="icon.h" />
     <ClInclude Include="SampleRateNormalizer.h" />
+    <ClInclude Include="SAudio3FadeXapo.h" />
     <ClInclude Include="SoundBase.h" />
+    <ClInclude Include="XAudio2EffectManager.h" />
     <ClInclude Include="XAudio2Manager.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="TextureBase.h" />

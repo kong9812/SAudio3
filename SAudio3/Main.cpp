@@ -64,6 +64,10 @@ WPARAM MessageLoop(Window *window, MSG msg)
 	directX11[WINDOWS_ID::MAIN_WINDOWS]->GetSwapChain(),
 	directX11[WINDOWS_ID::MAIN_WINDOWS]->GetRenderTargetView());
 
+	// ランチャーの終了時間(1秒)
+	int launcherEndTime = timeGetTime() + 1000;
+	bool isLauncher = true;
+
 	// メッセージループ
 	while (true)
 	{
@@ -90,6 +94,15 @@ WPARAM MessageLoop(Window *window, MSG msg)
 		}
 		else
 		{
+			if (isLauncher)
+			{
+				if (timeGetTime() >= launcherEndTime)
+				{
+					window->CloseWindow(WINDOWS_ID::SUB_WINDOWS);
+					window->ShowWndAgain(WINDOWS_ID::MAIN_WINDOWS);
+					isLauncher = false;
+				}
+			}
 			appProc->Update(hWnd[WINDOWS_ID::MAIN_WINDOWS]);	// 更新処理
 			appProc->Draw(directX11[WINDOWS_ID::MAIN_WINDOWS]->GetRenderTargetView());	// 描画処理
 		}

@@ -47,14 +47,6 @@ XAudio2Manager::XAudio2Manager(SoundBase *_soundBase)
 		PostQuitMessage(0);
 	}
 
-	//std::string teststring = "TEST";
-	//std::stringstream hValStr;
-	//for (std::size_t i = 0; i < teststring.length(); i++)
-	//{
-	//	int hValInt = (char)teststring[i];
-	//	hValStr << "0x" << std::hex << hValInt << " ";
-	//}
-
 #if ( _WIN32_WINNT > _WIN32_WINNT_WIN7) && defined(_DEBUG)
 	// Win7以降のデバッグ機能
 	XAUDIO2_DEBUG_CONFIGURATION debugConfig{ NULL };
@@ -79,6 +71,9 @@ XAudio2Manager::XAudio2Manager(SoundBase *_soundBase)
 		PostQuitMessage(0);
 	}
 
+	// エフェクトマネージャーの初期化
+	xAudio2EffectManager = new XAudio2EffectManager;
+
 	soundBase = _soundBase;
 }
 
@@ -101,6 +96,8 @@ XAudio2Manager::~XAudio2Manager()
 		}
 		voiceResource.clear();
 	}
+	// エフェクトマネージャーの終了処理
+	SAFE_DELETE(xAudio2EffectManager)
 
 	// マスターボイスの終了処理
 	SAFE_DESTROY_VOICE(XAudio2MasteringVoice)

@@ -114,10 +114,6 @@ __device__ void Normalize(short *outData, short *inData, long inSize, int allCha
 		}
 		else
 		{
-			if (idx == 1)
-			{
-				int x = 0;
-			}
 			// 次のデータが今のデータより大きいなら
 			float tmp1 = inData[readPos * allChannel + j];			// 前のデータ
 			float tmp2 = inData[(readPos + 1) * allChannel + j];	// 次のデータ
@@ -129,11 +125,9 @@ __device__ void Normalize(short *outData, short *inData, long inSize, int allCha
 		//float tmp1 = ((short)inData[readPos*allChannel + j]
 		//	- (float)inData[readPos*allChannel + j]) * tmpSample;
 		//short tmp3 = (short)(inData[readPos*allChannel + j] + ((float)(inData[readPos*allChannel + j] - inData[readPos*allChannel + j]) * tmpSample));
-
 		//outData[idx * allChannel + j] =
 		//	(short)(inData[readPos*allChannel + j]);
 	}
-
 	// CPU
 	//for (int i = 0; i < (wav.data.waveSize / (int)sizeof(short) / wav.fmt.fmtChannel); i++)
 	//{

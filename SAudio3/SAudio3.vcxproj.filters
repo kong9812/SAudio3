@@ -68,6 +68,15 @@
     <Filter Include="ソース ファイル\SoundCore\SampleRateNormalizer">
       <UniqueIdentifier>{69c9f735-f6dc-4be7-a327-aac3c566bbcc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\SoundCore\XAudio2\XAudio2Manager">
+      <UniqueIdentifier>{b54b8a26-d768-4d83-bfa5-7be740f2def3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\SoundCore\XAudio2\XAudio2EffectManager">
+      <UniqueIdentifier>{a80002e5-9a06-4b46-a731-0287bc38e191}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\SoundCore\XAudio2\XAPO">
+      <UniqueIdentifier>{b4532694-4d52-43ff-9844-1a90a7f2c26f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Directx11.h">
@@ -139,9 +148,6 @@
     <ClInclude Include="stb_image.h">
       <Filter>ソース ファイル\stb</Filter>
     </ClInclude>
-    <ClInclude Include="XAudio2Manager.h">
-      <Filter>ソース ファイル\SoundCore\XAudio2</Filter>
-    </ClInclude>
     <ClInclude Include="SoundBase.h">
       <Filter>ソース ファイル\SoundCore\SoundBase</Filter>
     </ClInclude>
@@ -156,6 +162,15 @@
     </ClInclude>
     <ClInclude Include="SampleRateNormalizer.h">
       <Filter>ソース ファイル\SoundCore\SampleRateNormalizer</Filter>
+    </ClInclude>
+    <ClInclude Include="XAudio2Manager.h">
+      <Filter>ソース ファイル\SoundCore\XAudio2\XAudio2Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="XAudio2EffectManager.h">
+      <Filter>ソース ファイル\SoundCore\XAudio2\XAudio2EffectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="SAudio3FadeXapo.h">
+      <Filter>ソース ファイル\SoundCore\XAudio2\XAPO</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -213,9 +228,6 @@
     <ClCompile Include="TextureBase.cpp">
       <Filter>ソース ファイル\Texture\TextureBase</Filter>
     </ClCompile>
-    <ClCompile Include="XAudio2Manager.cpp">
-      <Filter>ソース ファイル\SoundCore\XAudio2</Filter>
-    </ClCompile>
     <ClCompile Include="SoundBase.cpp">
       <Filter>ソース ファイル\SoundCore\SoundBase</Filter>
     </ClCompile>
@@ -227,6 +239,15 @@
     </ClCompile>
     <ClCompile Include="SampleRateNormalizer.cpp">
       <Filter>ソース ファイル\SoundCore\SampleRateNormalizer</Filter>
+    </ClCompile>
+    <ClCompile Include="XAudio2Manager.cpp">
+      <Filter>ソース ファイル\SoundCore\XAudio2\XAudio2Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="XAudio2EffectManager.cpp">
+      <Filter>ソース ファイル\SoundCore\XAudio2\XAudio2EffectManager</Filter>
+    </ClCompile>
+    <ClCompile Include="SAudio3FadeXapo.cpp">
+      <Filter>ソース ファイル\SoundCore\XAudio2\XAPO</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

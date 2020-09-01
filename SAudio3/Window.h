@@ -10,8 +10,10 @@
 //===================================================================================================================================
 namespace windowNS
 {
-	const int WINDOW_WIDTH	= 1920;
-	const int WINDOW_HEIGHT = 1080;
+	const int WINDOW_MAIN_WIDTH	= 1920;
+	const int WINDOW_MAIN_HEIGHT = 1080;
+	const int WINDOW_SUB_WIDTH = 256;
+	const int WINDOW_SUB_HEIGHT = 256;
 }
 enum WINDOWS_ID
 {
@@ -38,6 +40,11 @@ public:
 
 	// ウインドの表示
 	void ShowWnd(int nCmdShow);
+	// ウインドの再表示
+	void ShowWndAgain(WINDOWS_ID windowID);
+
+	// ウインドの終了処理
+	void CloseWindow(WINDOWS_ID windowID);
 
 	// ウインドハンドルの取得
 	HWND GetWindowHwnd(int windowID);
@@ -58,4 +65,6 @@ private:
 	bool reSizeFlg;			// リサイズフラグ
 	WPARAM wParam;			// リサイズ用
 	LPARAM lParam;			// リサイズ用
+	HICON icon;				// ランチャー画像
+	HDC	hdc;				// ランチャー描画用
 };

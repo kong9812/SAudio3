@@ -83,8 +83,8 @@ HRESULT Window::Init(HINSTANCE hInstance)
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT,
 		0,
-		windowNS::WINDOW_WIDTH,
-		windowNS::WINDOW_HEIGHT,
+		windowNS::WINDOW_MAIN_WIDTH,
+		windowNS::WINDOW_MAIN_HEIGHT,
 		NULL,
 		NULL,
 		hInstance,
@@ -92,12 +92,12 @@ HRESULT Window::Init(HINSTANCE hInstance)
 	hWnd[WINDOWS_ID::SUB_WINDOWS] = CreateWindowEx(
 		WS_EX_OVERLAPPEDWINDOW,
 		wcex[WINDOWS_ID::SUB_WINDOWS].lpszClassName,
-		MAIN_APP_NAME,
-		WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT,
-		0,
-		windowNS::WINDOW_WIDTH,
-		windowNS::WINDOW_HEIGHT,
+		SUB_APP_NAME,
+		WS_POPUPWINDOW,
+		GetSystemMetrics(SM_CXSCREEN) / 2 - windowNS::WINDOW_SUB_WIDTH / 2,
+		GetSystemMetrics(SM_CYSCREEN) / 2 - windowNS::WINDOW_SUB_HEIGHT / 2,
+		windowNS::WINDOW_SUB_WIDTH,
+		windowNS::WINDOW_SUB_HEIGHT,
 		hWnd[WINDOWS_ID::MAIN_WINDOWS],
 		NULL,
 		hInstance,
@@ -141,10 +141,39 @@ LRESULT CALLBACK Window::WndProc1(HWND hWnd, UINT message, WPARAM _wParam, LPARA
 }
 LRESULT CALLBACK Window::WndProc2(HWND hWnd, UINT message, WPARAM _wParam, LPARAM _lParam)
 {
+	int x = 0;
 	switch (message)
 	{
-	case WM_DESTROY:
-		PostQuitMessage(0);
+	case WM_CREATE:
+		//アイコンロード
+		icon = (HICON)LoadImage(NULL,
+			"icon.ico",
+			IMAGE_ICON,
+			0,
+			0,
+			LR_LOADFROMFILE);
+		if (icon == NULL)
+		{
+			MessageBox(NULL, "情報を取得できません", "GetObject", MB_OK);
+		}
+		//描画用DC取得
+		hdc = ::GetDC(hWnd);
+		break;
+	case WM_SIZE:
+		x = 1;
+		break;
+	case WM_PAINT:
+		PAINTSTRUCT ps;
+		hdc = BeginPaint(hWnd, &ps);
+		if (DrawIconEx(hdc, 0, 0, icon, windowNS::WINDOW_SUB_WIDTH, windowNS::WINDOW_SUB_HEIGHT, 0, NULL, DI_NORMAL))
+		{
+			EndPaint(hWnd, &ps);
+		}
+		break;
+	case WM_CLOSE:
+		ReleaseDC(NULL, hdc);
+		DestroyIcon(icon);
+		DestroyWindow(hWnd);
 		break;
 	case WM_KEYDOWN:case WM_SYSKEYDOWN:
 		if (_wParam == VK_ESCAPE)
@@ -173,14 +202,37 @@ void Window::ShowWnd(int nCmdShow)
 		480 * 2 - client.bottom,
 		false);
 #endif
+	// メインウィンドウは更新のみ
+	UpdateWindow(hWnd[WINDOWS_ID::MAIN_WINDOWS]);
 
-	// ウィンドウの再表示
-	for (int i = 0; i < WINDOWS_ID::MAX_WINDOWS; i++)
-	{
-		ShowWindow(hWnd[i], nCmdShow);
-		UpdateWindow(hWnd[i]);
-	}
-	ShowWindow(hWnd[WINDOWS_ID::SUB_WINDOWS], SW_MINIMIZE);
+	// ランチャーの更新・表示
+	ShowWindow(hWnd[WINDOWS_ID::SUB_WINDOWS], nCmdShow);
+	UpdateWindow(hWnd[WINDOWS_ID::SUB_WINDOWS]);
+
+	//// 画面サイズの取得
+	//int x, y;
+	//x = GetSystemMetrics(SM_CXSCREEN);
+	//y = GetSystemMetrics(SM_CYSCREEN);
+	//bool b = SetWindowPos(hWnd[WINDOWS_ID::SUB_WINDOWS],
+	//	HWND_TOP, x / 2 - windowNS::WINDOW_SUB_WIDTH / 2, y / 2 - windowNS::WINDOW_SUB_HEIGHT / 2, 
+	//	windowNS::WINDOW_SUB_WIDTH, windowNS::WINDOW_SUB_HEIGHT, SWP_SHOWWINDOW);
+}
+
+//===================================================================================================================================
+// ウインドの再表示
+//===================================================================================================================================
+void Window::ShowWndAgain(WINDOWS_ID windowID)
+{
+	// 再表示
+	ShowWindow(hWnd[windowID], SW_SHOWDEFAULT);
+}
+
+//===================================================================================================================================
+// ウインドの終了処理
+//===================================================================================================================================
+void Window::CloseWindow(WINDOWS_ID windowID)
+{
+	SendMessage(hWnd[windowID], WM_CLOSE, 0, 0);
 }
 
 //===================================================================================================================================

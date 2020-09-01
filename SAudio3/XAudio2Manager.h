@@ -10,6 +10,7 @@
 #include <xaudio2.h>
 #include "Main.h"
 #include "SoundBase.h"
+#include "XAudio2EffectManager.h"
 
 //===================================================================================================================================
 // マクロ定義
@@ -69,6 +70,7 @@ private:
 
 	IXAudio2				*XAudio2;							// XAudio2
 	IXAudio2MasteringVoice	*XAudio2MasteringVoice;				// マスターボイス
+	XAudio2EffectManager	*xAudio2EffectManager;				// エフェクトマネージャー
 	std::map<std::string, VoiceResource> voiceResource;			// ボイスリソース
 
 	float					oldMasteringVoiceVolume;			// 重い対策
