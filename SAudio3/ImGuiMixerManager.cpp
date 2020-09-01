@@ -3,13 +3,15 @@
 //===================================================================================================================================
 #include "ImguiManager.h"
 #include "ImGuiMixerManager.h"
+#include "SampleRateNormalizer.h"
 
 //===================================================================================================================================
 // コンストラクタ
 //===================================================================================================================================
-ImGuiMixerManager::ImGuiMixerManager(TextureBase *_textureBase)
+ImGuiMixerManager::ImGuiMixerManager(TextureBase *_textureBase, SoundBase *_soundBase)
 {
 	textureBase = _textureBase;
+	soundBase = _soundBase;
 }
 
 //===================================================================================================================================
@@ -39,6 +41,11 @@ void ImGuiMixerManager::SetMixerResource(std::string soundName,bool addUse)
 	Mixer_Resource tmpData;
 	tmpData.soundName = soundName;
 	tmpData.cnt = NULL;
+
+	// 正規化[テスト]
+	SampleRateNormalizer *normalizer = new SampleRateNormalizer;
+	normalizer->SetSampleRate(&soundBase->soundResource[soundName], 48000);
+	SAFE_DELETE(normalizer)
 
 	// 追加
 	if (addUse)

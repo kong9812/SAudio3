@@ -39,7 +39,7 @@ struct Mixer_Data
 class ImGuiMixerManager
 {
 public:
-	ImGuiMixerManager(TextureBase *_textureBase);
+	ImGuiMixerManager(TextureBase *_textureBase, SoundBase *_soundBase);
 	~ImGuiMixerManager();
 
 	// 利用するサウンドの設置
@@ -49,8 +49,9 @@ public:
 	void MixerPanel(bool *showMixerPanael);
 
 private:
-	Mixer_Data	mixerData;		// ミクサーデータ
 	TextureBase	*textureBase;	// テクスチャベース
+	SoundBase	*soundBase;		// サウンドベース
+	Mixer_Data	mixerData;		// ミクサーデータ
 
 	// ミクサーパラメーターの作成
 	Mixer_Parameter CreateMixerParameter(Mixer_Resource mixResourceData);

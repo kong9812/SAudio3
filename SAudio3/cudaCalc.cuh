@@ -49,5 +49,5 @@ public:
 	Compress_Data compressor(short *_data, long _size, int channel);
 
 	// ê≥ãKâª
-	short *normalizer(short *_data, short sampleRate);
+	short *normalizer(short *_data, long _size, int channel, int oldSampleRate, int newSampleRate);
 };

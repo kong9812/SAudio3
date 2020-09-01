@@ -71,7 +71,7 @@ ImGuiManager::ImGuiManager(HWND hWnd, ID3D11Device *device,
 	imGuiPlotManager = new ImGuiPlotManager;
 
 	// ミクサーマネージャー
-	imGuiMixerManager = new ImGuiMixerManager(_textureBase);
+	imGuiMixerManager = new ImGuiMixerManager(_textureBase, _soundBase);
 }
 
 //===================================================================================================================================

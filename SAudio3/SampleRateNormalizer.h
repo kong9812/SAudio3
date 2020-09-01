@@ -3,6 +3,7 @@
 // インクルード
 //===================================================================================================================================
 #include "Main.h"
+#include "SoundBase.h"
 
 //===================================================================================================================================
 // クラス
@@ -13,8 +14,6 @@ public:
 	SampleRateNormalizer() {};
 	~SampleRateNormalizer() {};
 
-private:
-
 	// サンプリング周波数の正規化
-	short *SetSampleRate(short *data);
+	short *SetSampleRate(SoundResource *soundResource, int sampleRate);
 };
