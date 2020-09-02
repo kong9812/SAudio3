@@ -21,6 +21,11 @@
 #include "imGui/docking/imgui_impl_win32.h"
 #include "imGui/docking/imgui_impl_dx11.h"
 #include "imGui/docking/imgui_internal.h"
+
+//// プロットの拡張
+//#include "ImGui/docking/implot.h"
+//#include "imGui/docking/implot_internal.h"
+
 #else
 #include "imGui/imgui.h"
 #include "imGui/imgui_impl_win32.h"
@@ -81,6 +86,7 @@ private:
 	ImGuiPlotManager	*imGuiPlotManager;	// [ImGui]プロットマネージャー
 	ImGuiMixerManager	*imGuiMixerManager;	// [ImGui]ミクサーマネージャー
 
+	bool showImDemo;					// [ImPlot・ImGui]デモ画面
 	bool showMainPanel;					// [ImGuiフラグ]メインパネル
 	bool showPlayerPanel;				// [ImGuiフラグ]再生パネル
 	bool showSoundBasePanel;			// [ImGuiフラグ]サウンドベースパネル

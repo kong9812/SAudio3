@@ -58,15 +58,16 @@ void ImGuiPlotManager::PlotCompressWave(std::string soundName, SoundResource *so
 	else
 	{
 		// ˆ³kˆ—
+		compressData[soundName] = cudaCalc->compressor(soundResource->data, soundResource->size, soundResource->waveFormatEx.nChannels);
+		soundResource->isWaveUpdate = !soundResource->isWaveUpdate;
+		soundResource->isCompressed = !soundResource->isCompressed;
+
 		//Compress_Data *tmpCompressData = &compressData[soundName];
 		//CreateCompressWave(soundName, soundResource);
 		//ImGui::Text("compressBlock:%d", tmpCompressData->compressBlock);
 		//ImGui::Text("readPos:%ld", tmpCompressData->readPos);
 		//ImGui::Text("dataPos:%d", tmpCompressData->dataPos);
 		//ImGui::Text("size:%ld", soundResource->size);
-		compressData[soundName] = cudaCalc->compressor(soundResource->data, soundResource->size, soundResource->waveFormatEx.nChannels);
-		soundResource->isWaveUpdate = !soundResource->isWaveUpdate;
-		soundResource->isCompressed = !soundResource->isCompressed;
 	}
 }
 

@@ -91,7 +91,8 @@ XAudio2Manager::~XAudio2Manager()
 		for (auto i = begin; i != end; i++)
 		{
 			// ソースボイスの終了処理
-			//i->second.sourceVoice->Stop();
+			XAUDIO2_VOICE_SENDS sendList = { NULL };
+			HRESULT hr = i->second.sourceVoice->SetOutputVoices(&sendList);
 			SAFE_DESTROY_VOICE(i->second.sourceVoice)
 		}
 		voiceResource.clear();
@@ -138,7 +139,7 @@ IXAudio2MasteringVoice *XAudio2Manager::CreateMasterVoice(IXAudio2 *xAudio2)
 //===================================================================================================================================
 // ボイスリソースの作成
 //===================================================================================================================================
-void XAudio2Manager::CreateVoiceResourceVoice(IXAudio2 *xAudio2, std::string voiceName, SoundResource soundResource)
+HRESULT XAudio2Manager::CreateVoiceResourceVoice(IXAudio2 *xAudio2, std::string voiceName, SoundResource soundResource)
 {
 	IXAudio2 *tmpXAudio = xAudio2;	// 外部からのXAudio2
 	IXAudio2SourceVoice *tmpXAudio2SourceVoice = nullptr;
@@ -159,13 +160,15 @@ void XAudio2Manager::CreateVoiceResourceVoice(IXAudio2 *xAudio2, std::string voi
 	buffer.LoopBegin = 0;
 
 	// ソースボイスの作成
-	tmpXAudio->CreateSourceVoice(&tmpXAudio2SourceVoice, &soundResource.waveFormatEx);
-	tmpXAudio2SourceVoice->SubmitSourceBuffer(&buffer);
+	HRESULT hr = tmpXAudio->CreateSourceVoice(&tmpXAudio2SourceVoice, &soundResource.waveFormatEx);
+	hr = tmpXAudio2SourceVoice->SubmitSourceBuffer(&buffer);
 
 
 	// ボイスリソースの作成
 	voiceResource[voiceName].sourceVoice = tmpXAudio2SourceVoice;
 	voiceResource[voiceName].isPlaying = false;
+
+	return hr;
 }
 
 //===================================================================================================================================
@@ -275,4 +278,82 @@ XAUDIO2_VOICE_DETAILS XAudio2Manager::GetVoiceDetails(std::string voiceName)
 		voiceResource[voiceName].sourceVoice->GetVoiceDetails(&voiceDetails);
 	}
 	return voiceDetails;
+}
+
+//===================================================================================================================================
+// 処理サンプリングの設定
+//===================================================================================================================================
+void XAudio2Manager::SetProcessSampling(int _processSampling)
+{
+	processSampling = _processSampling;
+}
+
+//===================================================================================================================================
+// 処理サンプリングの取得
+//===================================================================================================================================
+int XAudio2Manager::GetProcessSampling(void)
+{
+	return processSampling;
+}
+
+//===================================================================================================================================
+// サブミックスボイスの作成
+//===================================================================================================================================
+IXAudio2SubmixVoice *XAudio2Manager::CreateSubmixVoice(std::string voiceName)
+{
+	IXAudio2SubmixVoice *tmpSubmixVoice = nullptr;
+	XAudio2->CreateSubmixVoice(&tmpSubmixVoice, soundBase->soundResource[voiceName].waveFormatEx.nChannels,
+		soundBase->soundResource[voiceName].waveFormatEx.nSamplesPerSec);
+	return tmpSubmixVoice;
+}
+
+//===================================================================================================================================
+// サブミックスボイスの作成
+//===================================================================================================================================
+IXAudio2SourceVoice *XAudio2Manager::CreateSourceVoice(std::string voiceName)
+{
+	IXAudio2SourceVoice *tmpXAudio2SourceVoice = nullptr;
+
+	// バッファの設定
+	XAUDIO2_BUFFER buffer = { 0 };
+	buffer.pAudioData = (BYTE*)soundBase->soundResource[voiceName].data;
+	buffer.Flags = XAUDIO2_END_OF_STREAM;
+	buffer.AudioBytes = soundBase->soundResource[voiceName].size;
+	buffer.LoopCount = 255;
+	buffer.LoopBegin = 0;
+
+	// ソースボイスの作成
+	HRESULT hr = XAudio2->CreateSourceVoice(&tmpXAudio2SourceVoice, &soundBase->soundResource[voiceName].waveFormatEx);
+	hr = tmpXAudio2SourceVoice->SubmitSourceBuffer(&buffer);
+
+	return tmpXAudio2SourceVoice;
+}
+
+//===================================================================================================================================
+// アウトプットボイスの設定
+//===================================================================================================================================
+HRESULT XAudio2Manager::SetOutputVoice(std::string voiceName, 
+	std::map <std::string, XAUDIO2_SEND_DESCRIPTOR> _sendDescriptorList, int sendCount)
+{
+	// 連想配列から全要素の取り出し(本当はやりたくないが…)
+	XAUDIO2_SEND_DESCRIPTOR *sendDescriptorList = new XAUDIO2_SEND_DESCRIPTOR[sendCount];
+	auto begin = _sendDescriptorList.begin();
+	auto end = _sendDescriptorList.end();
+	int idx = 0;
+	for (auto i = begin; i != end; i++, idx++)
+	{
+		sendDescriptorList[idx] = i->second;
+	}
+
+	XAUDIO2_VOICE_SENDS voiceSends = { NULL };
+	voiceSends.SendCount = sendCount;
+	voiceSends.pSends = sendDescriptorList;
+
+	if (voiceResource[voiceName].sourceVoice == nullptr)
+	{
+		CreateVoiceResourceVoice(XAudio2, voiceName, soundBase->soundResource[voiceName]);
+	}
+	HRESULT hr = voiceResource[voiceName].sourceVoice->SetOutputVoices(&voiceSends);
+	SAFE_DELETE(sendDescriptorList)
+	return hr;
 }

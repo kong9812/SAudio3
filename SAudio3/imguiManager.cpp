@@ -15,6 +15,7 @@ ImGuiManager::ImGuiManager(HWND hWnd, ID3D11Device *device,
 
 	// [ImGui]コンテクストの作成
 	ImGui::CreateContext();
+	//ImPlot::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	//ImFontConfig config;
 	//config.MergeMode = true;
@@ -25,9 +26,12 @@ ImGuiManager::ImGuiManager(HWND hWnd, ID3D11Device *device,
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;		// ドッキングの使用許可
 #endif
 
-	// クラシックモード(色)
+	// GUIの初期化
 	ImGui::StyleColorsClassic();
-
+	ImGui::PushStyleVar(ImGuiStyleVar_::ImGuiStyleVar_GrabMinSize, 18.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_::ImGuiStyleVar_FrameRounding, 12.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_::ImGuiStyleVar_GrabRounding, 12.0f);
+	
 	// [ImGui]win32の初期化
 	if (!ImGui_ImplWin32_Init(hWnd))
 	{
@@ -55,6 +59,7 @@ ImGuiManager::ImGuiManager(HWND hWnd, ID3D11Device *device,
 	showPlayerPanel = true;
 	showSoundBasePanel = true;
 	showMixerPanel = true;
+	showImDemo = false;
 
 	isPlaying = false;
 	isMasteringVoiceVolumeOver1 = false;
@@ -71,7 +76,7 @@ ImGuiManager::ImGuiManager(HWND hWnd, ID3D11Device *device,
 	imGuiPlotManager = new ImGuiPlotManager;
 
 	// ミクサーマネージャー
-	imGuiMixerManager = new ImGuiMixerManager(_textureBase, _soundBase);
+	imGuiMixerManager = new ImGuiMixerManager(xAudio2Manager,_textureBase, _soundBase);
 }
 
 //===================================================================================================================================
@@ -85,6 +90,7 @@ ImGuiManager::~ImGuiManager()
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
+	//ImPlot::DestroyContext();
 }
 
 //===================================================================================================================================
@@ -151,6 +157,15 @@ void ImGuiManager::ShowPanel()
 //===================================================================================================================================
 void ImGuiManager::MainPanel()
 {
+#ifdef _DEBUG
+	// デモ画面
+	if (showImDemo)
+	{
+		//ImPlot::ShowDemoWindow(&showImDemo);
+		//ImGui::ShowDemoWindow(&showImDemo);
+	}
+#endif
+
 	// データカウンターリセット
 	//imGuiPlotManager->ResetDataCnt();
 
@@ -175,6 +190,9 @@ void ImGuiManager::MainPanel()
 
 		// パフォーマンスビューア
 		PerformanceViewer();
+
+		// 処理サンプリング(44100・48000)
+
 
 		// ドッキング
 		ImGuiID dockspaceID = ImGui::GetID("MainPanelDockSpace");
@@ -277,6 +295,7 @@ void ImGuiManager::MenuBar()
 		// ウインド
 		if (ImGui::BeginMenu("Window"))
 		{
+			ImGui::MenuItem("ImPlot Demo", "", &showImDemo);
 			ImGui::MenuItem("Player", "", &showPlayerPanel);
 			ImGui::MenuItem("Sound Base", "", &showSoundBasePanel);	
 			ImGui::MenuItem("Mixer", "", &showMixerPanel);		

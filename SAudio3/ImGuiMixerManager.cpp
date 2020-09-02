@@ -8,8 +8,9 @@
 //===================================================================================================================================
 // コンストラクタ
 //===================================================================================================================================
-ImGuiMixerManager::ImGuiMixerManager(TextureBase *_textureBase, SoundBase *_soundBase)
+ImGuiMixerManager::ImGuiMixerManager(XAudio2Manager *_xAudio2Manager,TextureBase *_textureBase, SoundBase *_soundBase)
 {
+	xAudio2Manager = _xAudio2Manager;
 	textureBase = _textureBase;
 	soundBase = _soundBase;
 }
@@ -24,10 +25,13 @@ ImGuiMixerManager::~ImGuiMixerManager()
 	{
 		mixerData.mixerResource.clear();
 	}
-
-	// 連想配列の削除
+	// リストの削除
 	if (mixerData.mixerParameter.size() > NULL)
 	{
+		for (auto i : mixerData.mixerParameter)
+		{
+			SAFE_DESTROY_VOICE(i.XAudio2SourceVoice)
+		}
 		mixerData.mixerParameter.clear();
 	}
 }
@@ -65,18 +69,19 @@ void ImGuiMixerManager::SetMixerResource(std::string soundName,bool addUse)
 Mixer_Parameter ImGuiMixerManager::CreateMixerParameter(Mixer_Resource mixResourceData)
 {
 	// ミクサーパラメーターの初期化
-	Mixer_Parameter tmpData;
-	tmpData.soundName = mixResourceData.soundName + std::to_string(mixResourceData.cnt);
-	tmpData.fadeInMs = NULL;
-	tmpData.fadeInPos = NULL;
-	tmpData.fadeOutMs = NULL;
-	tmpData.fadeOutPos = NULL;
-	tmpData.isPlaying = false;
-	tmpData.isFade = false;
+	Mixer_Parameter tmpMixerParameter;
+	tmpMixerParameter.XAudio2SourceVoice = xAudio2Manager->CreateSourceVoice(mixResourceData.soundName);
+	tmpMixerParameter.soundName = mixResourceData.soundName + std::to_string(mixResourceData.cnt);
+	tmpMixerParameter.fadeInMs = NULL;
+	tmpMixerParameter.fadeInPos = NULL;
+	tmpMixerParameter.fadeOutMs = NULL;
+	tmpMixerParameter.fadeOutPos = NULL;
+	tmpMixerParameter.isPlaying = false;
+	tmpMixerParameter.isFade = false;
 
-	tmpData.playingPos = rand() % 10 / 10.0f;
+	tmpMixerParameter.playingPos = rand() % 10 / 10.0f;
 
-	return tmpData;
+	return tmpMixerParameter;
 }
 
 //===================================================================================================================================
@@ -100,6 +105,7 @@ void ImGuiMixerManager::MixerPanel(bool *showMixerPanael)
 				{
 					// ミクサーパラメーターの作成
 					mixerData.mixerParameter.push_back(CreateMixerParameter(*i));
+
 					// ミクサーパラメーターの追加
 					i->cnt++;
 				}
@@ -116,7 +122,7 @@ void ImGuiMixerManager::MixerPanel(bool *showMixerPanael)
 
 				// ミクサーパラメーター一覧
 				int idx = 0;
-				for (std::list<Mixer_Parameter>::iterator i = mixerData.mixerParameter.begin(); i != mixerData.mixerParameter.end(); i++)
+				for (auto i = mixerData.mixerParameter.begin(); i != mixerData.mixerParameter.end();)
 				{
 					ImGui::PushID(i->soundName.c_str());
 					ImVec2 tmpTextSize = ImGui::CalcTextSize(i->soundName.c_str());
@@ -126,13 +132,23 @@ void ImGuiMixerManager::MixerPanel(bool *showMixerPanael)
 					// [パーツ]再生プレイヤー
 					MixerPartPlayer(i, tmpTextSize.y);
 
+					// [パーツ]ミクサー
+					MixerPartMixer(i);
+
 					ImGui::SameLine();
 
 					// [パーツ]削除ボタン
-					MixerPartDelete(ImGui::Button("Del"));
-
-					// [パーツ]ミクサー
-					MixerPartMixer(i);
+					if (MixerPartDelete(i, ImGui::Button("Del")))
+					{
+						mixerData.mixerParameter.erase(i);
+						ImGui::NextColumn();
+						ImGui::PopID();
+						break;
+					}
+					else
+					{
+						i++;
+					}
 
 					ImGui::NextColumn();
 					idx++;
@@ -157,21 +173,25 @@ void ImGuiMixerManager::MixerPartPlayer(std::list<Mixer_Parameter>::iterator mix
 {
 	if (mixerParameter->isPlaying)
 	{
-		if (ImGui::ImageButtonEx(ImGui::GetID(mixerParameter->soundName.c_str()),
-			(void*)textureBase->GetShaderResource((char *)"pauseButton.png"),
-			ImVec2(buttomSize, buttomSize), ImVec2(-1, 0), ImVec2(0, 1), ImVec2(0, 0),
-			ImVec4(1.0f, 1.0f, 1.0f, 0.0f), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
+		//if (ImGui::ImageButtonEx(ImGui::GetID(mixerParameter->soundName.c_str()),
+		//	(void*)textureBase->GetShaderResource((char *)"pauseButton.png"),
+		//	ImVec2(buttomSize, buttomSize), ImVec2(-1, 0), ImVec2(0, 1), ImVec2(0, 0),
+		//	ImVec4(1.0f, 1.0f, 1.0f, 0.0f), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
+		if (ImGui::Button("Pause"))
 		{
+			mixerParameter->XAudio2SourceVoice->Stop();
 			mixerParameter->isPlaying = !mixerParameter->isPlaying;
 		}
 	}
 	else
 	{
-		if (ImGui::ImageButtonEx(ImGui::GetID(mixerParameter->soundName.c_str()),
-			(void*)textureBase->GetShaderResource((char *)"playButton.png"),
-			ImVec2(buttomSize, buttomSize), ImVec2(-1, 0), ImVec2(0, 1), ImVec2(0, 0),
-			ImVec4(1.0f, 1.0f, 1.0f, 0.0f), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
+		//if (ImGui::ImageButtonEx(ImGui::GetID(mixerParameter->soundName.c_str()),
+		//	(void*)textureBase->GetShaderResource((char *)"playButton.png"),
+		//	ImVec2(buttomSize, buttomSize), ImVec2(-1, 0), ImVec2(0, 1), ImVec2(0, 0),
+		//	ImVec4(1.0f, 1.0f, 1.0f, 0.0f), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
+		if (ImGui::Button("Play"))
 		{
+			mixerParameter->XAudio2SourceVoice->Start();
 			mixerParameter->isPlaying = !mixerParameter->isPlaying;
 		}
 	}
@@ -184,9 +204,14 @@ void ImGuiMixerManager::MixerPartPlayer(std::list<Mixer_Parameter>::iterator mix
 //===================================================================================================================================
 // [パーツ]削除ボタン
 //===================================================================================================================================
-void ImGuiMixerManager::MixerPartDelete(bool deleteButton)
+bool ImGuiMixerManager::MixerPartDelete(std::list<Mixer_Parameter>::iterator mixerParameter, bool deleteButton)
 {
-
+	// 先にボイスの削除を行う
+	if (deleteButton)
+	{
+		SAFE_DESTROY_VOICE(mixerParameter->XAudio2SourceVoice)
+	}
+	return deleteButton;
 }
 
 //===================================================================================================================================
@@ -205,4 +230,16 @@ void ImGuiMixerManager::MixerPartMixer(std::list<Mixer_Parameter>::iterator mixe
 		ImGui::SliderFloat("Fade In Time(ms)", &mixerParameter->fadeInMs, 0.0f, 200.0f);
 		ImGui::SliderFloat("Fade Out Time(ms)", &mixerParameter->fadeOutMs, 0.0f, 200.0f);
 	}
+}
+
+//===================================================================================================================================
+// 送信ディスクリプタの作成・設置
+// ミクサーパラメーターのサウンド名は後ろに数字がついてる
+// 例:xxx.wav0 , xxx.wav1
+//===================================================================================================================================
+void ImGuiMixerManager::SetSendDescriptor(std::string mixerParameterName,
+	std::list<Mixer_Resource>::iterator mixerResource, IXAudio2SubmixVoice *XAudio2SubmixVoice)
+{
+	mixerResource->sendDescriptor[mixerParameterName].Flags = NULL;
+	mixerResource->sendDescriptor[mixerParameterName].pOutputVoice = XAudio2SubmixVoice;
 }

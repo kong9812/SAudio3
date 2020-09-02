@@ -11,12 +11,14 @@
 //===================================================================================================================================
 struct Mixer_Resource
 {
+	std::map <std::string, XAUDIO2_SEND_DESCRIPTOR>sendDescriptor;
 	std::string soundName;	// サウンド名
 	int cnt;				// 利用回数
 };
 
 struct Mixer_Parameter
 {
+	IXAudio2SourceVoice *XAudio2SourceVoice;	// テスト再生用
 	std::string soundName;
 	bool	isFade;
 	bool	isPlaying;
@@ -39,7 +41,7 @@ struct Mixer_Data
 class ImGuiMixerManager
 {
 public:
-	ImGuiMixerManager(TextureBase *_textureBase, SoundBase *_soundBase);
+	ImGuiMixerManager(XAudio2Manager *_xAudio2Manager, TextureBase *_textureBase, SoundBase *_soundBase);
 	~ImGuiMixerManager();
 
 	// 利用するサウンドの設置
@@ -49,9 +51,10 @@ public:
 	void MixerPanel(bool *showMixerPanael);
 
 private:
-	TextureBase	*textureBase;	// テクスチャベース
-	SoundBase	*soundBase;		// サウンドベース
-	Mixer_Data	mixerData;		// ミクサーデータ
+	XAudio2Manager	*xAudio2Manager;// XAudio2マネジャー
+	TextureBase		*textureBase;	// テクスチャベース
+	SoundBase		*soundBase;		// サウンドベース
+	Mixer_Data		mixerData;		// ミクサーデータ
 
 	// ミクサーパラメーターの作成
 	Mixer_Parameter CreateMixerParameter(Mixer_Resource mixResourceData);
@@ -60,8 +63,12 @@ private:
 	void MixerPartPlayer(std::list<Mixer_Parameter>::iterator mixerParameter, float buttomSize);
 
 	// [パーツ]削除ボタン
-	void MixerPartDelete(bool deleteButton);
+	bool MixerPartDelete(std::list<Mixer_Parameter>::iterator mixerParameter, bool deleteButton);
 
 	// [パーツ]ミクサー
 	void MixerPartMixer(std::list<Mixer_Parameter>::iterator mixerParameter);
+
+	// 送信ディスクリプタの作成・設置
+	void SetSendDescriptor(std::string mixerParameterName,
+		std::list<Mixer_Resource>::iterator mixerResource, IXAudio2SubmixVoice *XAudio2SubmixVoice);
 };

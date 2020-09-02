@@ -51,7 +51,7 @@ public:
 	IXAudio2MasteringVoice	*CreateMasterVoice(IXAudio2 *xAudio2);
 
 	// ボイスリソースの作成
-	void CreateVoiceResourceVoice(IXAudio2 *xAudio2, std::string voiceName, SoundResource soundResource);
+	HRESULT CreateVoiceResourceVoice(IXAudio2 *xAudio2, std::string voiceName, SoundResource soundResource);
 
 	// ソースボイスの再生・一時停止
 	void PlayPauseSourceVoice(IXAudio2 *xAudio2, std::string voiceName);
@@ -70,6 +70,22 @@ public:
 	// ボイス詳細
 	XAUDIO2_VOICE_DETAILS GetVoiceDetails(std::string voiceName);
 
+	// 処理サンプリングの設定
+	void SetProcessSampling(int _processSampling);
+
+	// 処理サンプリングの取得
+	int GetProcessSampling(void);
+
+	// サブミックスボイスの作成
+	IXAudio2SubmixVoice *CreateSubmixVoice(std::string voiceName);
+	
+	// サブミックスボイスの作成
+	IXAudio2SourceVoice *CreateSourceVoice(std::string voiceName);
+
+	// アウトプットボイスの設定
+	HRESULT SetOutputVoice(std::string voiceName,
+		std::map <std::string, XAUDIO2_SEND_DESCRIPTOR> sendDescriptorList, int sendCount);
+
 private:
 	SoundBase				*soundBase;							// サウンドベース
 
@@ -78,5 +94,6 @@ private:
 	XAudio2EffectManager	*xAudio2EffectManager;				// エフェクトマネージャー
 	std::map<std::string, VoiceResource> voiceResource;			// ボイスリソース
 
+	int						processSampling;					// 処理サンプリング
 	float					oldMasteringVoiceVolume;			// 重い対策
 };

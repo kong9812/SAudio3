@@ -29,7 +29,7 @@ XAudio2EffectManager::~XAudio2EffectManager()
 //===================================================================================================================================
 // エフェクトの設置・解除
 //===================================================================================================================================
-HRESULT XAudio2EffectManager::SetXapoEffect(IXAudio2SourceVoice *sourceVoice, XAPO_LIST xapoID,
+HRESULT XAudio2EffectManager::SetXapoEffect(IXAudio2SubmixVoice *submixVoice, XAPO_LIST xapoID,
 	int effectCnt, std::list<XAPO_LIST> effectList, bool isUse)
 {
 	bool isInit = false;	// 初期化状態
@@ -56,7 +56,7 @@ HRESULT XAudio2EffectManager::SetXapoEffect(IXAudio2SourceVoice *sourceVoice, XA
 			XAUDIO2_EFFECT_CHAIN		chain = { NULL };				// エフェクトチェン
 
 			XAUDIO2_VOICE_DETAILS		voiceDetails = { NULL };		// ボイス詳細
-			sourceVoice->GetVoiceDetails(&voiceDetails);				// ボイス詳細の取得
+			submixVoice->GetVoiceDetails(&voiceDetails);				// ボイス詳細の取得
 
 			// エフェクトディスクリプタの初期化
 			effectDescriptor.pEffect = XApo[xapoID];
@@ -68,18 +68,18 @@ HRESULT XAudio2EffectManager::SetXapoEffect(IXAudio2SourceVoice *sourceVoice, XA
 			chain.pEffectDescriptors = &effectDescriptor;
 
 			// ソースボイスとの接続
-			sourceVoice->SetEffectChain(&chain);
+			submixVoice->SetEffectChain(&chain);
 		}
 		else
 		{
 			// エフェクトの有効化
-			sourceVoice->EnableEffect(effectID);
+			submixVoice->EnableEffect(effectID);
 		}
 	}
 	else
 	{
 		// エフェクトの無効化
-		sourceVoice->DisableEffect(effectID);
+		submixVoice->DisableEffect(effectID);
 	}
 
 	return S_OK;

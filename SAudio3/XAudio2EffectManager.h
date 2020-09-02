@@ -29,7 +29,7 @@ public:
 	~XAudio2EffectManager();
 
 	// エフェクトの設置・解除
-	HRESULT SetXapoEffect(IXAudio2SourceVoice *sourceVoice, XAPO_LIST xapoID,
+	HRESULT SetXapoEffect(IXAudio2SubmixVoice *submixVoice, XAPO_LIST xapoID,
 		int effectCnt, std::list<XAPO_LIST> effectList, bool isUse);
 
 private:

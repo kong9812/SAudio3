@@ -152,6 +152,9 @@
     <ClCompile Include="ImGui\docking\imgui_impl_dx11.cpp" />
     <ClCompile Include="ImGui\docking\imgui_impl_win32.cpp" />
     <ClCompile Include="ImGui\docking\imgui_widgets.cpp" />
+    <ClCompile Include="ImGui\docking\implot.cpp" />
+    <ClCompile Include="ImGui\docking\implot_demo.cpp" />
+    <ClCompile Include="ImGui\docking\implot_items.cpp" />
     <ClCompile Include="ImGui\imgui.cpp" />
     <ClCompile Include="ImGui\imgui_demo.cpp" />
     <ClCompile Include="ImGui\imgui_draw.cpp" />
@@ -178,6 +181,8 @@
     <ClInclude Include="ImGuiMixerManager.h" />
     <ClInclude Include="ImGuiPlotManager.h" />
     <ClInclude Include="icon.h" />
+    <ClInclude Include="ImGui\docking\implot.h" />
+    <ClInclude Include="ImGui\docking\implot_internal.h" />
     <ClInclude Include="SampleRateNormalizer.h" />
     <ClInclude Include="SAudio3FadeXapo.h" />
     <ClInclude Include="SoundBase.h" />
