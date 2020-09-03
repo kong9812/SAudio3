@@ -70,16 +70,19 @@ Mixer_Parameter ImGuiMixerManager::CreateMixerParameter(Mixer_Resource mixResour
 {
 	// ミクサーパラメーターの初期化
 	Mixer_Parameter tmpMixerParameter;
+	tmpMixerParameter.maxSample = soundBase->soundResource[mixResourceData.soundName].size / sizeof(short) / soundBase->soundResource[mixResourceData.soundName].waveFormatEx.nChannels;
+	tmpMixerParameter.maxMs = ((soundBase->soundResource[mixResourceData.soundName].size / sizeof(short) / soundBase->soundResource[mixResourceData.soundName].waveFormatEx.nChannels) /
+		soundBase->soundResource[mixResourceData.soundName].waveFormatEx.nSamplesPerSec) * 1000;
 	tmpMixerParameter.XAudio2SourceVoice = xAudio2Manager->CreateSourceVoice(mixResourceData.soundName);
-	tmpMixerParameter.soundName = mixResourceData.soundName + std::to_string(mixResourceData.cnt);
+	tmpMixerParameter.soundName = mixResourceData.soundName;
+	tmpMixerParameter.parameterName = mixResourceData.soundName + std::to_string(mixResourceData.cnt);
 	tmpMixerParameter.fadeInMs = NULL;
 	tmpMixerParameter.fadeInPos = NULL;
 	tmpMixerParameter.fadeOutMs = NULL;
-	tmpMixerParameter.fadeOutPos = NULL;
+	tmpMixerParameter.fadeOutPos = tmpMixerParameter.maxMs;
 	tmpMixerParameter.isPlaying = false;
 	tmpMixerParameter.isFade = false;
-
-	tmpMixerParameter.playingPos = rand() % 10 / 10.0f;
+	tmpMixerParameter.playingPos = NULL;
 
 	return tmpMixerParameter;
 }
@@ -124,8 +127,8 @@ void ImGuiMixerManager::MixerPanel(bool *showMixerPanael)
 				int idx = 0;
 				for (auto i = mixerData.mixerParameter.begin(); i != mixerData.mixerParameter.end();)
 				{
-					ImGui::PushID(i->soundName.c_str());
-					ImVec2 tmpTextSize = ImGui::CalcTextSize(i->soundName.c_str());
+					ImGui::PushID(i->parameterName.c_str());
+					ImVec2 tmpTextSize = ImGui::CalcTextSize(i->parameterName.c_str());
 					int mixerParametersSizeX = tmpTextSize.x + 250;
 					ImGui::SetColumnWidth(idx, mixerParametersSizeX);
 
@@ -197,8 +200,15 @@ void ImGuiMixerManager::MixerPartPlayer(std::list<Mixer_Parameter>::iterator mix
 	}
 	ImGui::SameLine();
 
+	// 再生位置
+	XAUDIO2_VOICE_STATE voiceState = { NULL };
+	mixerParameter->XAudio2SourceVoice->GetState(&voiceState);
+	mixerParameter->playingPos = ((voiceState.SamplesPlayed % (soundBase->soundResource[mixerParameter->soundName].size / sizeof(short) / soundBase->soundResource[mixerParameter->soundName].waveFormatEx.nChannels))
+		/ (float)(soundBase->soundResource[mixerParameter->soundName].size / sizeof(short) / soundBase->soundResource[mixerParameter->soundName].waveFormatEx.nChannels));
+	int playingMs = voiceState.SamplesPlayed % (soundBase->soundResource[mixerParameter->soundName].size / sizeof(short) / soundBase->soundResource[mixerParameter->soundName].waveFormatEx.nChannels) /
+		(float)soundBase->soundResource[mixerParameter->soundName].waveFormatEx.nSamplesPerSec * 1000.0f;
 	// サウンド名
-	ImGui::Text(mixerParameter->soundName.c_str());
+	ImGui::Text("%s Playing:%0.f%% (%dms)", mixerParameter->parameterName.c_str(), mixerParameter->playingPos * 100, playingMs);
 }
 
 //===================================================================================================================================
@@ -220,15 +230,25 @@ bool ImGuiMixerManager::MixerPartDelete(std::list<Mixer_Parameter>::iterator mix
 void ImGuiMixerManager::MixerPartMixer(std::list<Mixer_Parameter>::iterator mixerParameter)
 {
 	ImGui::PushItemWidth(200);
-	ImGui::SliderFloat("In Pos(S)", &mixerParameter->fadeInPos, 0.0f, 200.0f);
-	ImGui::ProgressBar(mixerParameter->playingPos,
-		ImVec2(200, imGuiManagerNS::soundBasePanelProgressBarSize.y), "");
-	ImGui::SliderFloat("Out Pos(S)", &mixerParameter->fadeOutPos, 0.0f, 200.0f);
+	ImGui::SliderInt("In Pos(ms)", &mixerParameter->fadeInPos, 0.0f, mixerParameter->maxMs);
+
+	ImGui::ProgressBar(mixerParameter->playingPos, ImVec2(200, imGuiManagerNS::soundBasePanelProgressBarSize.y), "");
+
+	ImGui::SliderInt("Out Pos(ms)", &mixerParameter->fadeOutPos, 0.0f, mixerParameter->maxMs);
+	if (mixerParameter->fadeOutPos < mixerParameter->fadeInPos)
+	{
+		mixerParameter->fadeInPos = mixerParameter->fadeOutPos;
+	}
+
 	ImGui::Checkbox("Cross Fade", &mixerParameter->isFade);
 	if (mixerParameter->isFade)
 	{
-		ImGui::SliderFloat("Fade In Time(ms)", &mixerParameter->fadeInMs, 0.0f, 200.0f);
-		ImGui::SliderFloat("Fade Out Time(ms)", &mixerParameter->fadeOutMs, 0.0f, 200.0f);
+		ImGui::SliderInt("Fade In Time(ms)", &mixerParameter->fadeInMs, 0.0f, mixerParameter->maxMs);
+		ImGui::SliderInt("Fade Out Time(ms)", &mixerParameter->fadeOutMs, 0.0f, mixerParameter->maxMs);
+		if (mixerParameter->fadeOutMs > mixerParameter->maxMs - mixerParameter->fadeInMs)
+		{
+			mixerParameter->fadeOutMs = mixerParameter->maxMs - mixerParameter->fadeInMs;
+		}
 	}
 }
 

@@ -20,13 +20,16 @@ struct Mixer_Parameter
 {
 	IXAudio2SourceVoice *XAudio2SourceVoice;	// テスト再生用
 	std::string soundName;
+	std::string parameterName;
 	bool	isFade;
 	bool	isPlaying;
 	float	playingPos;
-	float	fadeInPos;
-	float	fadeOutPos;
-	float	fadeInMs;
-	float	fadeOutMs;
+	int		maxSample;
+	int		maxMs;
+	int		fadeInPos;
+	int		fadeOutPos;
+	int		fadeInMs;
+	int		fadeOutMs;
 };
 
 struct Mixer_Data
