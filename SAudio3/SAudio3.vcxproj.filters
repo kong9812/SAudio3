@@ -47,6 +47,9 @@
     <Filter Include="ソース ファイル\stb">
       <UniqueIdentifier>{4daa2ab5-c772-4f93-b04b-f3794efbb4cd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="メモ">
+      <UniqueIdentifier>{cd25d6b0-f35d-4ca7-8dd1-be42248d6475}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Directx11.h">
@@ -174,5 +177,18 @@
     <ClCompile Include="TextureBase.cpp">
       <Filter>ソース ファイル\Texture\TextureBase</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\SaiAudio3企画メモ.txt">
+      <Filter>メモ</Filter>
+    </Text>
+    <Text Include="..\素材リスト.txt">
+      <Filter>メモ</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Readme.md">
+      <Filter>メモ</Filter>
+    </None>
   </ItemGroup>
 </Project>
