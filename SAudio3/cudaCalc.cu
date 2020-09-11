@@ -6,10 +6,80 @@
 //===================================================================================================================================
 // プロトタイプ宣言
 //===================================================================================================================================
+__global__ void ConversionWave(float *fData, short *sData, int allChannel, int processChannel);
+__device__ void Conversion(float *fData, short *sData, int allChannel, int processChannel);
 __global__ void CompressWave(float *fData, short *sData, int compressBlock, int allChannel, int processChannel);
 __device__ void Compress(float *fData, short *sData, int compressBlock, int allChannel, int processChannel);
 __global__ void NormalizeWave(short *sData, short *inData, long inSize, int allChannel, int oldSampleRate, int newSampleRate);
 __device__ void Normalize(short *sData, short *inData, long inSize, int allChannel, int oldSampleRate, int newSampleRate);
+
+//===================================================================================================================================
+// [CPU->GPU]変換処理
+//===================================================================================================================================
+__global__ void ConversionWave(float *fData, short *sData, int allChannel, int processChannel)
+{
+	// [CPU->GPU]変換処理
+	Conversion(fData, sData, allChannel, processChannel);
+}
+
+//===================================================================================================================================
+// [CPU->GPU]変換処理
+//===================================================================================================================================
+__device__ void Conversion(float *fData, short *sData, int allChannel, int processChannel)
+{
+	int idx = blockIdx.x * blockDim.x + threadIdx.x;	// MAX:1024
+	fData[idx] = (float)sData[(idx*allChannel) + processChannel] / (float)SHRT_MAX;
+}
+
+//===================================================================================================================================
+// カーネル 変換処理
+//===================================================================================================================================
+Conversion_Data CUDA_CALC::conversion(short *_data, long _size, int channel)
+{
+	Conversion_Data tmpConversionData = { NULL };
+	tmpConversionData.channel = channel;
+
+	// 1チャンネル当たりのサンプリング数
+	tmpConversionData.sampingPerChannel = _size / sizeof(short) / channel;
+	
+	// ブロック(スレッドX,スレッドY,スレッドZ)
+	dim3 block(CUDACalcNS::threadX, 1, 1);
+	// グリッド(ブロックX,ブロックY)
+	dim3 grid(tmpConversionData.sampingPerChannel / block.x, 1, 1);
+
+	// デバイスメモリ確保(GPU)
+	float *fData = nullptr;
+	cudaError_t hr = cudaMalloc((void **)&fData, sizeof(float)*tmpConversionData.sampingPerChannel);
+
+	short *sData = nullptr;
+	hr = cudaMalloc((void **)&sData, _size);
+	hr = cudaMemset(sData, 0, _size);
+
+	// ホスト->デバイス
+	hr = cudaMemcpy(sData, &_data[0], _size, cudaMemcpyKind::cudaMemcpyHostToDevice);
+
+	// カーネル+デバイス->ホスト
+	tmpConversionData.startTime = timeGetTime();
+	tmpConversionData.data = new float *[tmpConversionData.channel];
+	for (int i = 0; i < tmpConversionData.channel; i++)
+	{
+		// メモリリセット
+		hr = cudaMemset(fData, NULL, sizeof(float)*tmpConversionData.sampingPerChannel);
+
+		tmpConversionData.data[i] = new float[tmpConversionData.sampingPerChannel];
+		memset(tmpConversionData.data[i], NULL, sizeof(float)*tmpConversionData.sampingPerChannel);
+		// カーネル
+		ConversionWave << <grid, block >> > (fData, sData, channel, i);
+		hr = cudaMemcpy(tmpConversionData.data[i], &fData[0], sizeof(float)*tmpConversionData.sampingPerChannel, cudaMemcpyDeviceToHost);
+	}
+	tmpConversionData.usedTime = timeGetTime() - tmpConversionData.startTime;
+
+	// 後片付け
+	hr = cudaFree(fData);
+	hr = cudaFree(sData);
+
+	return tmpConversionData;
+}
 
 //===================================================================================================================================
 // [CPU->GPU]圧縮処理
@@ -27,21 +97,23 @@ __device__ void Compress(float *fData, short *sData, int compressBlock, int allC
 {
 	int idx = blockIdx.x * blockDim.x + threadIdx.x;	// MAX:1024
 
-	long tmpData = 0;
+	float tmpData = 0;
 	for (int i = 0; i < compressBlock; i++)
 	{
-		tmpData += sData[((i + (idx * compressBlock))*allChannel) + processChannel];
+		tmpData += (float)sData[((i + (idx * compressBlock))*allChannel) + processChannel] / (float)SHRT_MAX;
 	}
-	fData[idx] = (float)tmpData / compressBlock;
+	fData[idx] = tmpData / (float)compressBlock;
 }
 
 //===================================================================================================================================
-// カーネル CPU<->GPU
+// カーネル 圧縮処理
 //===================================================================================================================================
 Compress_Data CUDA_CALC::compressor(short *_data, long _size, int channel)
 {
 	Compress_Data tmpCompressData = { NULL };
 	tmpCompressData.channel = channel;
+	tmpCompressData.max = 0;
+	tmpCompressData.min = 0;
 
 	// ブロック(スレッドX,スレッドY,スレッドZ)
 	dim3 block(CUDACalcNS::threadX, 1, 1);
@@ -75,6 +147,20 @@ Compress_Data CUDA_CALC::compressor(short *_data, long _size, int channel)
 		// カーネル
 		CompressWave <<<grid, block>>> (fData, sData, tmpCompressData.compressBlock, channel, i);
 		hr = cudaMemcpy(tmpCompressData.data[i], &fData[0], sizeof(float)*CUDACalcNS::compressSize, cudaMemcpyDeviceToHost);
+	}
+	for (int i = 0; i < channel; i++)
+	{
+		for (int j = 0; j < CUDACalcNS::compressSize; j++)
+		{
+			if (tmpCompressData.data[i][j] > tmpCompressData.max)
+			{
+				tmpCompressData.max = tmpCompressData.data[i][j];
+			}
+			if (tmpCompressData.data[i][j] < tmpCompressData.min)
+			{
+				tmpCompressData.min = tmpCompressData.data[i][j];
+			}
+		}
 	}
 	tmpCompressData.usedTime = timeGetTime() - tmpCompressData.startTime;
 
@@ -181,7 +267,7 @@ short *CUDA_CALC::normalizer(short *_data, long _size, int channel, int oldSampl
 	dim3 grid(newSize / channel / sizeof(short) / block.x, 1, 1);
 
 	// [CUDA]正規化
-	NormalizeWave << <grid, block >> > (outData, inData, newSize, channel, oldSampleRate, newSampleRate);
+	NormalizeWave <<<grid, block>>> (outData, inData, newSize, channel, oldSampleRate, newSampleRate);
 
 	// 仮データ
 	short *tmp = new short[newSize / sizeof(short)];

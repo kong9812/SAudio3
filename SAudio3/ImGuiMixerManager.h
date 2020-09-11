@@ -5,19 +5,21 @@
 #include "Main.h"
 #include "TextureBase.h"
 #include "SoundBase.h"
+#include "SAudio3FadeXapo.h"
 
 //===================================================================================================================================
 // 構造体
 //===================================================================================================================================
 struct Mixer_Resource
 {
-	std::map <std::string, XAUDIO2_SEND_DESCRIPTOR>sendDescriptor;
+	//std::map <std::string, XAUDIO2_SEND_DESCRIPTOR>sendDescriptor;
 	std::string soundName;	// サウンド名
 	int cnt;				// 利用回数
 };
 
 struct Mixer_Parameter
 {
+	SAudio3FadeParameter sAudio3FadeParameter;		
 	IXAudio2SourceVoice *XAudio2SourceVoice;	// テスト再生用
 	std::string soundName;
 	std::string parameterName;
@@ -26,10 +28,6 @@ struct Mixer_Parameter
 	float	playingPos;
 	int		maxSample;
 	int		maxMs;
-	int		fadeInPos;
-	int		fadeOutPos;
-	int		fadeInMs;
-	int		fadeOutMs;
 };
 
 struct Mixer_Data
@@ -71,7 +69,7 @@ private:
 	// [パーツ]ミクサー
 	void MixerPartMixer(std::list<Mixer_Parameter>::iterator mixerParameter);
 
-	// 送信ディスクリプタの作成・設置
-	void SetSendDescriptor(std::string mixerParameterName,
-		std::list<Mixer_Resource>::iterator mixerResource, IXAudio2SubmixVoice *XAudio2SubmixVoice);
+	//// 送信ディスクリプタの作成・設置
+	//void SetSendDescriptor(std::string mixerParameterName,
+	//	std::list<Mixer_Resource>::iterator mixerResource, IXAudio2SubmixVoice *XAudio2SubmixVoice);
 };

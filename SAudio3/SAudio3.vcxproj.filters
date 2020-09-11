@@ -80,6 +80,9 @@
     <Filter Include="ソース ファイル\ImGui\ImPlot">
       <UniqueIdentifier>{511a3c60-35ef-4444-b9f2-35fd66d7e918}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\ImGui\ImGui-Plot">
+      <UniqueIdentifier>{1cd8aabb-dcaa-4dff-abc4-f3001b968c41}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Directx11.h">
@@ -181,6 +184,9 @@
     <ClInclude Include="ImGui\docking\implot_internal.h">
       <Filter>ソース ファイル\ImGui\ImPlot</Filter>
     </ClInclude>
+    <ClInclude Include="ImGui\docking\imgui_plot.h">
+      <Filter>ソース ファイル\ImGui\ImGui-Plot</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Directx11.cpp">
@@ -266,6 +272,9 @@
     </ClCompile>
     <ClCompile Include="ImGui\docking\implot_items.cpp">
       <Filter>ソース ファイル\ImGui\ImPlot</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\docking\imgui_plot.cpp">
+      <Filter>ソース ファイル\ImGui\ImGui-Plot</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

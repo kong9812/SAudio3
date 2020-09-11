@@ -357,3 +357,11 @@ HRESULT XAudio2Manager::SetOutputVoice(std::string voiceName,
 	SAFE_DELETE(sendDescriptorList)
 	return hr;
 }
+
+//===================================================================================================================================
+// エフェクトの設置・解除
+//===================================================================================================================================
+HRESULT XAudio2Manager::SetXapoFade(IXAudio2SourceVoice *sourceVoice)
+{
+	return xAudio2EffectManager->SetXapoFade(sourceVoice);
+}

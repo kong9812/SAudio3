@@ -22,9 +22,10 @@
 #include "imGui/docking/imgui_impl_dx11.h"
 #include "imGui/docking/imgui_internal.h"
 
-//// プロットの拡張
-//#include "ImGui/docking/implot.h"
-//#include "imGui/docking/implot_internal.h"
+// プロットの拡張
+#include "ImGui/docking/implot.h"
+#include "imGui/docking/implot_internal.h"
+#include "ImGui/docking/imgui_plot.h"
 
 #else
 #include "imGui/imgui.h"

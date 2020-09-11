@@ -16,6 +16,8 @@
 // マクロ定義
 //===================================================================================================================================
 #define SAFE_DESTROY_VOICE(p)			if(p){  (p)->DestroyVoice(); p = NULL; }
+#define MS_TO_SAMPLING(ms,sf)				((float)ms/1000.0f*(float)sf)
+#define SAMPLE_TO_MS(sp,sf)				((float)sp/(float)sf*1000.0f)
 
 //===================================================================================================================================
 // 定数定義
@@ -85,6 +87,9 @@ public:
 	// アウトプットボイスの設定
 	HRESULT SetOutputVoice(std::string voiceName,
 		std::map <std::string, XAUDIO2_SEND_DESCRIPTOR> sendDescriptorList, int sendCount);
+
+	// エフェクトの設置・解除
+	HRESULT SetXapoFade(IXAudio2SourceVoice *sourceVoice);
 
 private:
 	SoundBase				*soundBase;							// サウンドベース

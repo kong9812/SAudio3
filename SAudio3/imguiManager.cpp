@@ -15,7 +15,7 @@ ImGuiManager::ImGuiManager(HWND hWnd, ID3D11Device *device,
 
 	// [ImGui]コンテクストの作成
 	ImGui::CreateContext();
-	//ImPlot::CreateContext();
+	ImPlot::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	//ImFontConfig config;
 	//config.MergeMode = true;
@@ -90,7 +90,7 @@ ImGuiManager::~ImGuiManager()
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
-	//ImPlot::DestroyContext();
+	ImPlot::DestroyContext();
 }
 
 //===================================================================================================================================
@@ -161,8 +161,8 @@ void ImGuiManager::MainPanel()
 	// デモ画面
 	if (showImDemo)
 	{
-		//ImPlot::ShowDemoWindow(&showImDemo);
-		//ImGui::ShowDemoWindow(&showImDemo);
+		ImPlot::ShowDemoWindow(&showImDemo);
+		ImGui::ShowDemoWindow(&showImDemo);
 	}
 #endif
 

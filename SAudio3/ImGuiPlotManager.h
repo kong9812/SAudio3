@@ -24,7 +24,8 @@ public:
 private:
 	CUDA_CALC *cudaCalc;
 	int dataCnt;										// 残り処理できるデータ量
-	std::map<std::string, Compress_Data> compressData;	// [連想配列]圧縮波形のデータ
+	//std::map<std::string, Compress_Data> compressData;	// [連想配列]圧縮波形のデータ
+	std::map<std::string, Conversion_Data> conversionData;	// [連想配列]波形のデータ
 
 	// 圧縮データの準備
 	//bool InitCompressData(std::string soundName, SoundResource *soundResource);

@@ -11,41 +11,21 @@ SoundBase::SoundBase()
 	WIN32_FIND_DATA FindFileData;	// ファイルデータ
 	int fileNum = 0;				// ファイル数
 
-	// ファイル検索ハンドル
-	HANDLE hFile = FindFirstFileEx("Sound\\*.wav*", FindExInfoBasic, &FindFileData,
-		FindExSearchNameMatch, NULL, NULL);
-
-	// ファイル検索
-	if (hFile != INVALID_HANDLE_VALUE)
+	for (int i = 0; i < FILE_FORMAT::FILE_MAX; i++)
 	{
-		// ファイルパス
-		std::string path = "Sound\\";
-		path += FindFileData.cFileName;
+		// ファイル検索ハンドル
+		HANDLE hFile = FindFirstFileEx(soundBaseNS::fileFormat[i], FindExInfoBasic, &FindFileData,
+			FindExSearchNameMatch, NULL, NULL);
 
-		// シェーダーリソースの作成
-		if (!LoadSound(path.c_str(), &soundResource[FindFileData.cFileName]))
-		{
-			// エラーメッセージ
-			MessageBox(NULL, errorNS::SoundResourceError, MAIN_APP_NAME, (MB_OK | MB_ICONERROR));
-
-			// 強制終了
-			PostQuitMessage(0);
-		}
-
-		// クリア
-		path.empty();
-
-		// ファイルカウンター
-		fileNum++;
-
-		while (FindNextFile(hFile, &FindFileData))
+		// ファイル検索
+		if (hFile != INVALID_HANDLE_VALUE)
 		{
 			// ファイルパス
-			path = "Sound\\";
+			std::string path = "Sound\\";
 			path += FindFileData.cFileName;
 
 			// シェーダーリソースの作成
-			if (!LoadSound(path.c_str(),&soundResource[FindFileData.cFileName]))
+			if (!LoadSound(path.c_str(), &soundResource[FindFileData.cFileName],i))
 			{
 				// エラーメッセージ
 				MessageBox(NULL, errorNS::SoundResourceError, MAIN_APP_NAME, (MB_OK | MB_ICONERROR));
@@ -59,20 +39,43 @@ SoundBase::SoundBase()
 
 			// ファイルカウンター
 			fileNum++;
-		}
 
-		// 後片付け
-		FindClose(hFile);
-	}
-	else
-	{
-		// エラーメッセージ
-		MessageBox(NULL, errorNS::SoundImportError, MAIN_APP_NAME, (MB_OK | MB_ICONERROR));
+			while (FindNextFile(hFile, &FindFileData))
+			{
+				// ファイルパス
+				path = "Sound\\";
+				path += FindFileData.cFileName;
+
+				// シェーダーリソースの作成
+				if (!LoadSound(path.c_str(), &soundResource[FindFileData.cFileName],i))
+				{
+					// エラーメッセージ
+					MessageBox(NULL, errorNS::SoundResourceError, MAIN_APP_NAME, (MB_OK | MB_ICONERROR));
+
+					// 強制終了
+					PostQuitMessage(0);
+				}
+
+				// クリア
+				path.empty();
+
+				// ファイルカウンター
+				fileNum++;
+			}
+
+			// 後片付け
+			FindClose(hFile);
+		}
+		else
+		{
+			// エラーメッセージ
+			MessageBox(NULL, errorNS::SoundImportError, MAIN_APP_NAME, (MB_OK | MB_ICONERROR));
 
 #ifndef _DEBUG
-		// 強制終了
-		PostQuitMessage(0);
+			// 強制終了
+			PostQuitMessage(0);
 #endif
+		}
 	}
 }
 
@@ -99,7 +102,7 @@ SoundBase::~SoundBase()
 //===================================================================================================================================
 // テクスチャローダー
 //===================================================================================================================================
-bool SoundBase::LoadSound(const char *path, SoundResource *soundResource)
+bool SoundBase::LoadSound(const char *path, SoundResource *soundResource, int fileFormat)
 {
 	// ファイル
 	FILE *fp = fopen(path, "rb");
@@ -114,8 +117,92 @@ bool SoundBase::LoadSound(const char *path, SoundResource *soundResource)
 		return false;
 	}
 
+	if (fileFormat == FILE_FORMAT::FILE_WAV)
+	{
+		// WAVファイル
+		ReadWav(fp, soundResource, path);
+	}
+	else if (fileFormat == FILE_FORMAT::FILE_OGG)
+	{
+		// Oggファイル
+		if (!ReadOgg(soundResource, path))
+		{
+			return false;
+		}
+	}
+	else
+	{
+		return false;
+	}
+
+	return true;
+}
+
+//===================================================================================================================================
+// Oggの読み込み
+//===================================================================================================================================
+bool SoundBase::ReadOgg(SoundResource *soundResource, const char *path)
+{
+	// [Ogg]ファイルオープン
+	OggVorbis_File oggVorbisFile = { NULL };
+	if (ov_fopen(path, &oggVorbisFile) != S_OK)
+	{
+		return false;
+	}
+
+	// [Ogg]フォーマット情報
+	vorbis_info* oggInfo = ov_info(&oggVorbisFile, -1);
+
+	// [Ogg]データサイズ #16bit (ov_pcm_total(,-1) * チャンネル数 * sizeof(short))
+	long oggAllSampling = static_cast<long>(ov_pcm_total(&oggVorbisFile, -1)) * oggInfo->channels;
+	long oggAllSamplingSize = oggAllSampling * sizeof(short);
+	soundResource->data = new short[oggAllSampling];
+	int currentSection = 0;
+	int comSize = 0;
+	while (1)
+	{
+		// 一応4096にセットする(マニュアル通り)※09/21 後回し:例外があったら変更する
+		char tmpBuffer[4096] = { NULL };
+		// バイトオーダー-bigendianp:0(わざと1する人はいないと思うが…) 16bit-word:sizeof(short) 符号付き-sgned:sizeof(char)
+		int readSize = ov_read(&oggVorbisFile, tmpBuffer, sizeof(tmpBuffer), 0, sizeof(short), 1, &currentSection);
+
+		// デコードできるデータがない
+		if (readSize == NULL)
+		{
+			break;
+		}
+		memcpy(soundResource->data + (comSize / sizeof(short)), tmpBuffer, readSize);
+		comSize += readSize;
+	}
+
+	// サウンドリソースの作成
+	soundResource->waveFormatEx.cbSize = 0;
+	soundResource->waveFormatEx.nChannels = oggInfo->channels;
+	soundResource->waveFormatEx.wBitsPerSample = 16;
+	soundResource->waveFormatEx.nSamplesPerSec = oggInfo->rate;
+	soundResource->waveFormatEx.wFormatTag = WAVE_FORMAT_PCM;
+	soundResource->waveFormatEx.nBlockAlign = (oggInfo->channels*soundResource->waveFormatEx.wBitsPerSample) / 8;
+	soundResource->waveFormatEx.nAvgBytesPerSec = oggInfo->rate*soundResource->waveFormatEx.nBlockAlign;
+	soundResource->size = oggAllSamplingSize;
+	soundResource->isWaveUpdate = true;
+	soundResource->isCompressed = false;
+	soundResource->isMix = false;
+	//soundResource->data = new short[wavFile.data.size / sizeof(short)];
+	//memcpy(soundResource->data, wavFile.data.data, wavFile.data.size);
+
+	// [Ogg]後片付け
+	ov_clear(&oggVorbisFile);
+
+	return true;
+}
+
+//===================================================================================================================================
+// WAVの読み込み
+//===================================================================================================================================
+void SoundBase::ReadWav(FILE *fp, SoundResource *soundResource, const char *path)
+{
 	// WAVファイル
-	WAV_FILE wavFile = { 0 };
+	WAV_FILE wavFile = { NULL };
 
 	// RIFFの読み込み
 	if (!ReadRIFF(fp, &wavFile))
@@ -182,8 +269,6 @@ bool SoundBase::LoadSound(const char *path, SoundResource *soundResource)
 	// 後片付け
 	SAFE_DELETE_ARRAY(wavFile.data.data)
 	fclose(fp);
-
-	return true;
 }
 
 //===================================================================================================================================

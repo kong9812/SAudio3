@@ -20,10 +20,10 @@ ImGuiPlotManager::ImGuiPlotManager()
 ImGuiPlotManager::~ImGuiPlotManager()
 {
 	// 連想配列の削除
-	if (compressData.size() > NULL)
+	if (conversionData.size() > NULL)
 	{
-		auto begin = compressData.begin();
-		auto end = compressData.end();
+		auto begin = conversionData.begin();
+		auto end = conversionData.end();
 		for (auto i = begin; i != end; i++)
 		{
 			// [チャンネルごと]データ部の削除
@@ -33,7 +33,7 @@ ImGuiPlotManager::~ImGuiPlotManager()
 			}
 			SAFE_DELETE(i->second.data)
 		}
-		compressData.clear();
+		conversionData.clear();
 	}
 	SAFE_DELETE(cudaCalc)
 }
@@ -46,21 +46,51 @@ void ImGuiPlotManager::PlotCompressWave(std::string soundName, SoundResource *so
 	if (!soundResource->isWaveUpdate && soundResource->isCompressed)
 	{
 		// プロット
-		Compress_Data *tmpCompressData = &compressData[soundName];
+		Conversion_Data *tmpConversionData = &conversionData[soundName];
 		ImVec2 plotextent(ImGui::GetContentRegionAvailWidth(), 100);
 		for (int i = 0; i < soundResource->waveFormatEx.nChannels; i++)
 		{
-			ImGui::PlotLines("", tmpCompressData->data[i], CUDACalcNS::compressSize, 0, "", FLT_MAX, FLT_MAX, plotextent);
+			// Draw first plot with multiple sources
+			ImGui::PlotConfig conf;
+			conf.values.count = tmpConversionData->sampingPerChannel;
+			conf.values.ys_list = (const float **)&tmpConversionData->data[i]; // use ys_list to draw several lines simultaneously
+			conf.values.ys_count = 1;
+			conf.values.colors = (const ImU32*)&ImColor(0, 255, 0);
+
+			conf.scale.min = -1;
+			conf.scale.max = 1;
+
+			conf.tooltip.show = true;
+
+			conf.grid_x.show = false;
+			//conf.grid_x.size = CUDACalcNS::compressSize;
+			//conf.grid_x.subticks = 1;
+			conf.grid_y.show = false;
+			//conf.grid_y.size = 1.0f;
+			//conf.grid_y.subticks = 5;
+
+			conf.selection.show = false;
+			//conf.selection.start = &selection_start;
+			//conf.selection.length = &selection_length;
+			conf.frame_size = plotextent;
+			ImGui::Plot("plot1", conf);
+
+			//ImGui::PlotLines("", tmpConversionData->data[i], tmpConversionData->sampingPerChannel, 0, "", FLT_MAX, FLT_MAX, plotextent);
 		}
-		ImGui::Text("usedTime:%d", tmpCompressData->usedTime);
+		ImGui::Text("usedTime:%d", tmpConversionData->usedTime);
 		ImGui::Text("size:%ld", soundResource->size);
 	}
 	else
 	{
-		// 圧縮処理
-		compressData[soundName] = cudaCalc->compressor(soundResource->data, soundResource->size, soundResource->waveFormatEx.nChannels);
+		// 変換処理
+		conversionData[soundName] = cudaCalc->conversion(soundResource->data, soundResource->size, soundResource->waveFormatEx.nChannels);
 		soundResource->isWaveUpdate = !soundResource->isWaveUpdate;
 		soundResource->isCompressed = !soundResource->isCompressed;
+
+		//// 圧縮処理
+		//compressData[soundName] = cudaCalc->compressor(soundResource->data, soundResource->size, soundResource->waveFormatEx.nChannels);
+		//soundResource->isWaveUpdate = !soundResource->isWaveUpdate;
+		//soundResource->isCompressed = !soundResource->isCompressed;
 
 		//Compress_Data *tmpCompressData = &compressData[soundName];
 		//CreateCompressWave(soundName, soundResource);

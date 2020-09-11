@@ -7,6 +7,13 @@
 //===================================================================================================================================
 // 定数定義
 //===================================================================================================================================
+enum FILE_FORMAT
+{
+	FILE_WAV,
+	FILE_OGG,
+	FILE_MAX
+};
+
 namespace soundBaseNS
 {
 	const int chunkSize		= 4;
@@ -17,6 +24,8 @@ namespace soundBaseNS
 	const char * const chunkWave	= "WAVE";
 	const char * const chunkFmt		= "fmt ";
 	const char * const chunkData	= "data";
+
+	const char * const fileFormat[FILE_FORMAT::FILE_MAX] = { "Sound\\*.wav*","Sound\\*.ogg*" };
 }
 
 //===================================================================================================================================
@@ -79,7 +88,13 @@ public:
 private:
 
 	// テクスチャローダー
-	bool LoadSound(const char *path, SoundResource *soundResource);
+	bool LoadSound(const char *path, SoundResource *soundResource, int fileFormat);
+
+	// Oggの読み込み
+	bool ReadOgg(SoundResource *soundResource, const char *path);
+
+	// WAVの読み込み
+	void ReadWav(FILE *fp, SoundResource *soundResource, const char *path);
 
 	// RIFFの読み込み
 	bool ReadRIFF(FILE *fp, WAV_FILE *wavFile);

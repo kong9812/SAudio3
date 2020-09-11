@@ -27,12 +27,23 @@ namespace CUDACalcNS
 //===================================================================================================================================
 // 構造体
 //===================================================================================================================================
+struct Conversion_Data
+{
+	int sampingPerChannel;
+	int startTime;
+	int usedTime;
+	int channel;
+	float **data;
+};
+
 struct Compress_Data
 {
 	int startTime;
 	int usedTime;
 	int compressBlock;
 	int channel;
+	float max;
+	float min;
 	float **data;				// 圧縮データ
 };
 
@@ -44,6 +55,9 @@ class CUDA_CALC
 public:
 	CUDA_CALC() {};
 	~CUDA_CALC() {};
+
+	// 変換
+	Conversion_Data conversion(short *_data, long _size, int channel);
 
 	// 圧縮
 	Compress_Data compressor(short *_data, long _size, int channel);
