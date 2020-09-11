@@ -18,4 +18,9 @@ usedTime:(time)ms
 更新内容:正規化(リサンプリング)  
 デフォルト:44100->48000 or 48000->44100  
 ※他の周波数でも対応する(一応…)  
-![ADD_NORMALIZER](https://i.gyazo.com/8c6e1ec5224106214cc43b0cbc8d4de9.png "0901_1")
+![ADD_NORMALIZER](https://i.gyazo.com/8c6e1ec5224106214cc43b0cbc8d4de9.png "0901_1")  
+
+■0912(UTF-8 05:30)  
+更新内容:Ogg対応   
+※現時点は16Bitしか対応しない(8Bitは今後の更新で対応する)  
+![SUPPORT_OGG](https://i.gyazo.com/b624b2fd64e2af10c612b36c11a7d50e.png "0912_1")
