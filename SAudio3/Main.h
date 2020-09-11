@@ -20,7 +20,6 @@
 #include <windows.h>
 #include <Pdh.h>
 #include <PdhMsg.h>
-#include <vorbis/vorbisfile.h>
 
 #pragma comment(lib, "pdh.lib")
 #pragma comment(lib,"winmm.lib")

@@ -24,7 +24,7 @@ extern "C"
 
 #include <ogg/ogg.h>
 
-typedef struct vorbis_info{
+	typedef struct vorbis_info{
   int version;
   int channels;
   long rate;
