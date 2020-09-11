@@ -3,6 +3,8 @@
 power by DirectX11&ImGui  
 since 10th August 2020  
 
+##※[Sampleブランチ]Debug(x64)でビルドしてください
+
 ■0827(UTF-8 00:30)  
 更新内容:CUDA対応！！  
 (上)CPU (下)GPU  
