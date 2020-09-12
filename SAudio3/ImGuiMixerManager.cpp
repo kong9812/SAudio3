@@ -70,24 +70,22 @@ Mixer_Parameter ImGuiMixerManager::CreateMixerParameter(Mixer_Resource mixResour
 {
 	// ミクサーパラメーターの初期化
 	Mixer_Parameter tmpMixerParameter;
-	tmpMixerParameter.maxSample = soundBase->soundResource[mixResourceData.soundName].size / sizeof(short) / soundBase->soundResource[mixResourceData.soundName].waveFormatEx.nChannels;
-	tmpMixerParameter.maxMs = ((soundBase->soundResource[mixResourceData.soundName].size / sizeof(short) / soundBase->soundResource[mixResourceData.soundName].waveFormatEx.nChannels) /
-		soundBase->soundResource[mixResourceData.soundName].waveFormatEx.nSamplesPerSec) * 1000;
+	tmpMixerParameter.maxSample = (float)soundBase->soundResource[mixResourceData.soundName].size / (float)sizeof(short) / (float)soundBase->soundResource[mixResourceData.soundName].waveFormatEx.nChannels;
+	tmpMixerParameter.maxMs = ((float)tmpMixerParameter.maxSample / (float)soundBase->soundResource[mixResourceData.soundName].waveFormatEx.nSamplesPerSec) * 1000.0f;
 	tmpMixerParameter.XAudio2SourceVoice = xAudio2Manager->CreateSourceVoice(mixResourceData.soundName);
 	tmpMixerParameter.soundName = mixResourceData.soundName;
 	tmpMixerParameter.parameterName = mixResourceData.soundName + std::to_string(mixResourceData.cnt);
-	tmpMixerParameter.sAudio3FadeParameter.fadeInMs = NULL;
-	tmpMixerParameter.sAudio3FadeParameter.fadeInPosMs = NULL;
-	tmpMixerParameter.sAudio3FadeParameter.fadeOutMs = NULL;
-	tmpMixerParameter.sAudio3FadeParameter.fadeOutPosMs = tmpMixerParameter.maxMs;
+	tmpMixerParameter.sAudio3FadeParameter.fadeInStartMs = NULL;
+	tmpMixerParameter.sAudio3FadeParameter.fadeInEndMs = 1;
+	tmpMixerParameter.sAudio3FadeParameter.fadeOutStartMs = tmpMixerParameter.maxMs - 1;
+	tmpMixerParameter.sAudio3FadeParameter.fadeOutEndMs = tmpMixerParameter.maxMs;
 	tmpMixerParameter.isPlaying = false;
 	tmpMixerParameter.isFade = false;
 	tmpMixerParameter.playingPos = NULL;
 
 	// フェードエフェクトの設置
 	HRESULT hr = xAudio2Manager->SetXapoFade(tmpMixerParameter.XAudio2SourceVoice);
-	tmpMixerParameter.sAudio3FadeParameter.allSampling = soundBase->soundResource[mixResourceData.soundName].size /
-		sizeof(short);
+	tmpMixerParameter.sAudio3FadeParameter.allSampling = (float)tmpMixerParameter.maxSample * (float)soundBase->soundResource[mixResourceData.soundName].waveFormatEx.nChannels;
 	hr = tmpMixerParameter.XAudio2SourceVoice->SetEffectParameters(0, &tmpMixerParameter.sAudio3FadeParameter, sizeof(SAudio3FadeParameter));
 	return tmpMixerParameter;
 }
@@ -137,14 +135,11 @@ void ImGuiMixerManager::MixerPanel(bool *showMixerPanael)
 				{
 					ImGui::PushID(i->parameterName.c_str());
 					ImVec2 tmpTextSize = ImGui::CalcTextSize(i->parameterName.c_str());
-					int mixerParametersSizeX = tmpTextSize.x + 250;
+					int mixerParametersSizeX = tmpTextSize.x + 300;
 					ImGui::SetColumnWidth(idx, mixerParametersSizeX);
 
 					// [パーツ]再生プレイヤー
 					MixerPartPlayer(i, tmpTextSize.y);
-
-					// [パーツ]ミクサー
-					MixerPartMixer(i);
 
 					ImGui::SameLine();
 
@@ -158,11 +153,15 @@ void ImGuiMixerManager::MixerPanel(bool *showMixerPanael)
 					}
 					else
 					{
+						// [パーツ]ミクサー
+						MixerPartMixer(i);
+
+						ImGui::NextColumn();
+						idx++;
+						ImGui::PopID();
+
 						i++;
 					}
-					ImGui::NextColumn();
-					idx++;
-					ImGui::PopID();
 				}
 				ImGui::NextColumn();
 				ImGui::EndColumns();
@@ -182,10 +181,6 @@ void ImGuiMixerManager::MixerPartPlayer(std::list<Mixer_Parameter>::iterator mix
 {
 	if (mixerParameter->isPlaying)
 	{
-		//if (ImGui::ImageButtonEx(ImGui::GetID(mixerParameter->soundName.c_str()),
-		//	(void*)textureBase->GetShaderResource((char *)"pauseButton.png"),
-		//	ImVec2(buttomSize, buttomSize), ImVec2(-1, 0), ImVec2(0, 1), ImVec2(0, 0),
-		//	ImVec4(1.0f, 1.0f, 1.0f, 0.0f), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
 		if (ImGui::Button("Pause"))
 		{
 			mixerParameter->XAudio2SourceVoice->Stop();
@@ -194,10 +189,6 @@ void ImGuiMixerManager::MixerPartPlayer(std::list<Mixer_Parameter>::iterator mix
 	}
 	else
 	{
-		//if (ImGui::ImageButtonEx(ImGui::GetID(mixerParameter->soundName.c_str()),
-		//	(void*)textureBase->GetShaderResource((char *)"playButton.png"),
-		//	ImVec2(buttomSize, buttomSize), ImVec2(-1, 0), ImVec2(0, 1), ImVec2(0, 0),
-		//	ImVec4(1.0f, 1.0f, 1.0f, 0.0f), ImVec4(1.0f, 1.0f, 1.0f, 1.0f)))
 		if (ImGui::Button("Play"))
 		{
 			mixerParameter->XAudio2SourceVoice->Start();
@@ -246,69 +237,58 @@ void ImGuiMixerManager::MixerPartMixer(std::list<Mixer_Parameter>::iterator mixe
 	ImGui::PushItemWidth(200);
 	int processingSample = NULL;
 	mixerParameter->XAudio2SourceVoice->GetEffectParameters(0, &processingSample, sizeof(float));
-	ImGui::TextDisabled("Processing Sampling:%d", processingSample);
+	ImGui::TextDisabled("Processing Sampling(1ch):%d", (int)((float)processingSample / (float)soundBase->soundResource[mixerParameter->soundName].waveFormatEx.nChannels));
 	if (ImGui::IsItemHovered())
 	{
 		ImGui::BeginTooltip();
-		ImGui::Text("Processing Ms:%.f", SAMPLE_TO_MS(processingSample,
+		ImGui::Text("Processing Ms(1ch):%.f", SAMPLE_TO_MS(((float)processingSample / (float)soundBase->soundResource[mixerParameter->soundName].waveFormatEx.nChannels), 
 			soundBase->soundResource[mixerParameter->soundName].waveFormatEx.nSamplesPerSec,
 			soundBase->soundResource[mixerParameter->soundName].waveFormatEx.nChannels));
 		ImGui::EndTooltip();
 	}
-
-	// In Pos(ms)
-	ImGui::SliderInt("In Pos(ms)", &mixerParameter->sAudio3FadeParameter.fadeInPosMs, 0.0f, mixerParameter->maxMs);
-	if (ImGui::IsItemHovered())
-	{
-		ImGui::BeginTooltip();
-		ImGui::Text("In Pos(sample):%.f",
-			MS_TO_SAMPLING(mixerParameter->sAudio3FadeParameter.fadeInPosMs,
-				soundBase->soundResource[mixerParameter->soundName].waveFormatEx.nSamplesPerSec));
-		ImGui::Text(u8"Sampling:1ch当たりのサンプリング数");
-		ImGui::EndTooltip();
-	}
-
 	ImGui::ProgressBar(mixerParameter->playingPos, ImVec2(200, imGuiManagerNS::soundBasePanelProgressBarSize.y), "");
 
-	// Out Pos(ms)
-	ImGui::SliderInt("Out Pos(ms)", &mixerParameter->sAudio3FadeParameter.fadeOutPosMs, 0.0f, mixerParameter->maxMs);
-	if (ImGui::IsItemHovered())
+	// Fade In Start Pos(ms)
+	if (ImGui::SliderInt("[Fade in] Start Pos(ms)", &mixerParameter->sAudio3FadeParameter.fadeInStartMs, 0.0f, mixerParameter->maxMs))
 	{
-		ImGui::BeginTooltip();
-		ImGui::Text("Out Pos(sample):%.f",
-			MS_TO_SAMPLING(mixerParameter->sAudio3FadeParameter.fadeOutPosMs,
-				soundBase->soundResource[mixerParameter->soundName].waveFormatEx.nSamplesPerSec));
-		ImGui::Text(u8"Sampling:1ch当たりのサンプリング数");
-		ImGui::EndTooltip();
+		if ((mixerParameter->sAudio3FadeParameter.fadeInStartMs >= mixerParameter->sAudio3FadeParameter.fadeInEndMs) ||
+			(mixerParameter->sAudio3FadeParameter.fadeInStartMs >= mixerParameter->sAudio3FadeParameter.fadeOutStartMs) ||
+			(mixerParameter->sAudio3FadeParameter.fadeInStartMs >= mixerParameter->sAudio3FadeParameter.fadeOutEndMs))
+		{
+			mixerParameter->sAudio3FadeParameter.fadeInStartMs = oldMixerParameter.sAudio3FadeParameter.fadeInStartMs;
+		}
 	}
 
-	ImGui::Checkbox("Cross Fade", &mixerParameter->isFade);
-	if (mixerParameter->isFade)
+	// Fade In End Pos(ms)
+	if (ImGui::SliderInt("[Fade in] End Pos(ms)", &mixerParameter->sAudio3FadeParameter.fadeInEndMs, 0.0f, mixerParameter->maxMs))
 	{
-		// Fade In Time(ms)
-		ImGui::SliderInt("Fade In Time(ms)", &mixerParameter->sAudio3FadeParameter.fadeInMs,
-			0.0f, mixerParameter->sAudio3FadeParameter.fadeOutPosMs - mixerParameter->sAudio3FadeParameter.fadeInPosMs);
-		if (ImGui::IsItemHovered())
+		if ((mixerParameter->sAudio3FadeParameter.fadeInEndMs <= mixerParameter->sAudio3FadeParameter.fadeInStartMs) ||
+			(mixerParameter->sAudio3FadeParameter.fadeInEndMs >= mixerParameter->sAudio3FadeParameter.fadeOutStartMs) ||
+			(mixerParameter->sAudio3FadeParameter.fadeInEndMs >= mixerParameter->sAudio3FadeParameter.fadeOutEndMs))
 		{
-			ImGui::BeginTooltip();
-			ImGui::Text("Fade In Time(sample):%.f",
-				MS_TO_SAMPLING(mixerParameter->sAudio3FadeParameter.fadeInMs,
-					soundBase->soundResource[mixerParameter->soundName].waveFormatEx.nSamplesPerSec));
-			ImGui::Text(u8"Sampling:1ch当たりのサンプリング数");
-			ImGui::EndTooltip();
+			mixerParameter->sAudio3FadeParameter.fadeInEndMs = oldMixerParameter.sAudio3FadeParameter.fadeInEndMs;
 		}
+	}
 
-		// Fade Out Time(ms)
-		ImGui::SliderInt("Fade Out Time(ms)", &mixerParameter->sAudio3FadeParameter.fadeOutMs,
-			0.0f, mixerParameter->maxMs - mixerParameter->sAudio3FadeParameter.fadeOutPosMs);
-		if (ImGui::IsItemHovered())
+	// Fade Out Start Pos(ms)
+	if (ImGui::SliderInt("[Fade out] Start Pos(ms)", &mixerParameter->sAudio3FadeParameter.fadeOutStartMs, 0.0f, mixerParameter->maxMs))
+	{
+		if ((mixerParameter->sAudio3FadeParameter.fadeOutStartMs >= mixerParameter->sAudio3FadeParameter.fadeOutEndMs) ||
+			(mixerParameter->sAudio3FadeParameter.fadeOutStartMs <= mixerParameter->sAudio3FadeParameter.fadeInStartMs) ||
+			(mixerParameter->sAudio3FadeParameter.fadeOutStartMs <= mixerParameter->sAudio3FadeParameter.fadeInEndMs))
 		{
-			ImGui::BeginTooltip();
-			ImGui::Text("Fade Out Time(sample):%.f",
-				MS_TO_SAMPLING(mixerParameter->sAudio3FadeParameter.fadeOutMs,
-					soundBase->soundResource[mixerParameter->soundName].waveFormatEx.nSamplesPerSec));
-			ImGui::Text(u8"Sampling:1ch当たりのサンプリング数");
-			ImGui::EndTooltip();
+			mixerParameter->sAudio3FadeParameter.fadeOutStartMs = oldMixerParameter.sAudio3FadeParameter.fadeOutStartMs;
+		}
+	}
+
+	// Fade Out End Pos(ms)
+	if (ImGui::SliderInt("[Fade out] End Pos(ms)", &mixerParameter->sAudio3FadeParameter.fadeOutEndMs, 0.0f, mixerParameter->maxMs))
+	{
+		if ((mixerParameter->sAudio3FadeParameter.fadeOutEndMs <= mixerParameter->sAudio3FadeParameter.fadeOutStartMs) ||
+			(mixerParameter->sAudio3FadeParameter.fadeOutEndMs <= mixerParameter->sAudio3FadeParameter.fadeInStartMs) ||
+			(mixerParameter->sAudio3FadeParameter.fadeOutEndMs <= mixerParameter->sAudio3FadeParameter.fadeInEndMs))
+		{
+			mixerParameter->sAudio3FadeParameter.fadeOutEndMs = oldMixerParameter.sAudio3FadeParameter.fadeOutEndMs;
 		}
 	}
 
@@ -316,7 +296,7 @@ void ImGuiMixerManager::MixerPartMixer(std::list<Mixer_Parameter>::iterator mixe
 	if (memcmp(&oldMixerParameter.sAudio3FadeParameter, &mixerParameter->sAudio3FadeParameter, sizeof(SAudio3FadeParameter)) != 0)
 	{
 		// XAPOのパラメーター設置
-		// mixerParameter->XAudio2SourceVoice->SetEffectParameters(0, &mixerParameter->sAudio3FadeParameter, sizeof(SAudio3FadeParameter));
+		mixerParameter->XAudio2SourceVoice->SetEffectParameters(0, &mixerParameter->sAudio3FadeParameter, sizeof(SAudio3FadeParameter));
 	}
 }
 

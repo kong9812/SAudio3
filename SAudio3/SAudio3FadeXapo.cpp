@@ -78,25 +78,21 @@ void SAudio3FadeXapo::OnSetParameters
 	XAPOASSERT(sizeof(SAudio3FadeParameter) > 0);
 	XAPOASSERT(pParameters != NULL);
 	XAPOASSERT(ParameterByteSize == sizeof(SAudio3FadeParameter));
-	XAPOASSERT(tmpParameters->fadeInPosMs <= tmpParameters->fadeOutPosMs);
-	XAPOASSERT(tmpParameters->fadeInMs + tmpParameters->fadeOutMs <= tmpParameters->allSampling);
+	XAPOASSERT(tmpParameters->fadeInStartMs != tmpParameters->fadeInEndMs);
+	XAPOASSERT(tmpParameters->fadeOutStartMs != tmpParameters->fadeOutEndMs);
+	XAPOASSERT(tmpParameters->fadeInStartMs < tmpParameters->fadeOutStartMs);
+	XAPOASSERT(tmpParameters->fadeInStartMs < tmpParameters->fadeOutEndMs);
+	XAPOASSERT(tmpParameters->fadeInEndMs < tmpParameters->fadeOutStartMs);
+	XAPOASSERT(tmpParameters->fadeInEndMs < tmpParameters->fadeOutEndMs);
 
 	// フェイドイン
-	if (tmpParameters->fadeInMs != NULL)
-	{
-		// サンプリング変換
-		fadeAddVolume = 1.0f / MS_TO_SAMPLING(tmpParameters->fadeInMs, inputFormat.nSamplesPerSec*inputFormat.nChannels);
-		fadeInPosSampling = MS_TO_SAMPLING(tmpParameters->fadeInPosMs, inputFormat.nSamplesPerSec*inputFormat.nChannels);
-		fadeInSampling = MS_TO_SAMPLING(tmpParameters->fadeInMs, inputFormat.nSamplesPerSec*inputFormat.nChannels);
-	}
+	fadeInStartSampling = MS_TO_SAMPLING(tmpParameters->fadeInStartMs, inputFormat.nSamplesPerSec*inputFormat.nChannels);
+	fadeInEndSampling = MS_TO_SAMPLING(tmpParameters->fadeInEndMs, inputFormat.nSamplesPerSec*inputFormat.nChannels);
+	fadeAddVolume = 1.0f / ((float)fadeInEndSampling - (float)fadeInStartSampling);
 	// フェイドアウト
-	if (tmpParameters->fadeOutMs != NULL)
-	{
-		// サンプリング変換
-		fadeMinusVolume = 1.0f / MS_TO_SAMPLING(tmpParameters->fadeOutMs, inputFormat.nSamplesPerSec*inputFormat.nChannels);
-		fadeOutPosSampling = MS_TO_SAMPLING(tmpParameters->fadeOutPosMs, inputFormat.nSamplesPerSec*inputFormat.nChannels);
-		fadeOutSampling = MS_TO_SAMPLING(tmpParameters->fadeOutMs, inputFormat.nSamplesPerSec*inputFormat.nChannels);
-	}
+	fadeOutStartSampling = MS_TO_SAMPLING(tmpParameters->fadeOutStartMs, inputFormat.nSamplesPerSec*inputFormat.nChannels);
+	fadeOutEndSampling = MS_TO_SAMPLING(tmpParameters->fadeOutEndMs, inputFormat.nSamplesPerSec*inputFormat.nChannels);
+	fadeMinusVolume = 1.0f / ((float)fadeOutEndSampling - (float)fadeOutStartSampling);
 }
 
 //===================================================================================================================================
@@ -122,8 +118,27 @@ void SAudio3FadeXapo::Process
 				float *inputBuf = (float *)pInputProcessParameters->pBuffer;
 				float *outputBuf = (float *)pOutputProcessParameters->pBuffer;
 
-				float currentVolume = 1.0f;
+				// フェードイン処理
+				if ((samplingCnt >= fadeInStartSampling) &&
+					(samplingCnt <= fadeInEndSampling))
+				{
+					// フェイド中の位置
+					int fadeIdx = samplingCnt - fadeInStartSampling;
 
+					// ボリューム計算
+					float volume = (fadeAddVolume)*fadeIdx;
+					outputBuf[i] = inputBuf[i] * volume;
+				}
+				else if ((samplingCnt >= fadeOutStartSampling) &&
+						(samplingCnt <= fadeOutEndSampling))
+				{
+					// フェイド中の位置
+					int fadeIdx = samplingCnt - fadeOutStartSampling;
+
+					// ボリューム計算
+					float volume = 1.0f - ((fadeMinusVolume)*fadeIdx);
+					outputBuf[i] = inputBuf[i] * volume;
+				}
 
 				// サンプリングカウンター(処理位置)
 				samplingCnt++;
