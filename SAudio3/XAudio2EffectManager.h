@@ -28,7 +28,7 @@ public:
 	XAudio2EffectManager();
 	~XAudio2EffectManager();
 
-	// フェードの設置
+	// フェイドの設置
 	HRESULT SetXapoFade(IXAudio2SourceVoice *sourceVoice);
 
 	// エフェクトの設置・解除

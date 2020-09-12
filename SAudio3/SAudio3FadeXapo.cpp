@@ -118,7 +118,7 @@ void SAudio3FadeXapo::Process
 				float *inputBuf = (float *)pInputProcessParameters->pBuffer;
 				float *outputBuf = (float *)pOutputProcessParameters->pBuffer;
 
-				// フェードイン処理
+				// フェイドイン処理
 				if ((samplingCnt >= fadeInStartSampling) &&
 					(samplingCnt <= fadeInEndSampling))
 				{

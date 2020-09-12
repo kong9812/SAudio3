@@ -83,7 +83,7 @@ Mixer_Parameter ImGuiMixerManager::CreateMixerParameter(Mixer_Resource mixResour
 	tmpMixerParameter.isFade = false;
 	tmpMixerParameter.playingPos = NULL;
 
-	// フェードエフェクトの設置
+	// フェイドエフェクトの設置
 	HRESULT hr = xAudio2Manager->SetXapoFade(tmpMixerParameter.XAudio2SourceVoice);
 	tmpMixerParameter.sAudio3FadeParameter.allSampling = (float)tmpMixerParameter.maxSample * (float)soundBase->soundResource[mixResourceData.soundName].waveFormatEx.nChannels;
 	hr = tmpMixerParameter.XAudio2SourceVoice->SetEffectParameters(0, &tmpMixerParameter.sAudio3FadeParameter, sizeof(SAudio3FadeParameter));

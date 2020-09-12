@@ -10,9 +10,9 @@
 struct SAudio3FadeParameter
 {
 	long	allSampling;
-	int		fadeInStartMs;	// [フェイドイン]フェードの開始時間(ms)
+	int		fadeInStartMs;	// [フェイドイン]フェイドの開始時間(ms)
 	int		fadeInEndMs;	// [フェイドイン]フェイドの完了時間(ms)
-	int		fadeOutStartMs;	// [フェイドアウト]フェードの開始時間(ms)
+	int		fadeOutStartMs;	// [フェイドアウト]フェイドの開始時間(ms)
 	int		fadeOutEndMs;	// [フェイドアウト]フェイドの完了時間(ms)
 };
 
@@ -63,9 +63,9 @@ private:
 	int		samplingCnt;			// サンプリングカウンター(処理位置)
 	float	fadeAddVolume;			// [フェイドイン]1サンプリング当たりのボリューム
 	float	fadeMinusVolume;		// [フェイドアウト]1サンプリング当たりのボリューム
-	int		fadeInStartSampling;	// [フェイドイン]フェードの開始位置(サンプリング)
+	int		fadeInStartSampling;	// [フェイドイン]フェイドの開始位置(サンプリング)
 	int		fadeInEndSampling;		// [フェイドイン]フェイドの完了位置(サンプリング)
-	int		fadeOutStartSampling;	// [フェイドアウト]フェードの開始位置(サンプリング)
+	int		fadeOutStartSampling;	// [フェイドアウト]フェイドの開始位置(サンプリング)
 	int		fadeOutEndSampling;		// [フェイドアウト]フェイドの完了位置(サンプリング)
 
 	// パラメータ
