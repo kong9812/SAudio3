@@ -9,6 +9,9 @@
 //===================================================================================================================================
 struct SAudio3FadeParameter
 {
+	bool	silentBeforeFade;	// フェイドの前を無音にする？
+	bool	silentAfterFade;	// フェイドの後を無音にする？
+
 	long	allSampling;
 	int		fadeInStartMs;	// [フェイドイン]フェイドの開始時間(ms)
 	int		fadeInEndMs;	// [フェイドイン]フェイドの完了時間(ms)

@@ -79,6 +79,8 @@ Mixer_Parameter ImGuiMixerManager::CreateMixerParameter(Mixer_Resource mixResour
 	tmpMixerParameter.sAudio3FadeParameter.fadeInEndMs = 1;
 	tmpMixerParameter.sAudio3FadeParameter.fadeOutStartMs = tmpMixerParameter.maxMs - 1;
 	tmpMixerParameter.sAudio3FadeParameter.fadeOutEndMs = tmpMixerParameter.maxMs;
+	tmpMixerParameter.sAudio3FadeParameter.silentBeforeFade = false;
+	tmpMixerParameter.sAudio3FadeParameter.silentAfterFade = false;
 	tmpMixerParameter.isPlaying = false;
 	tmpMixerParameter.isFade = false;
 	tmpMixerParameter.playingPos = NULL;
@@ -233,6 +235,9 @@ bool ImGuiMixerManager::MixerPartDelete(std::list<Mixer_Parameter>::iterator mix
 void ImGuiMixerManager::MixerPartMixer(std::list<Mixer_Parameter>::iterator mixerParameter)
 {
 	Mixer_Parameter oldMixerParameter = *mixerParameter;
+	ImGui::Checkbox("Silent before fade", &mixerParameter->sAudio3FadeParameter.silentBeforeFade);
+	ImGui::SameLine();
+	ImGui::Checkbox("Silent after fade", &mixerParameter->sAudio3FadeParameter.silentAfterFade);
 
 	ImGui::PushItemWidth(200);
 	int processingSample = NULL;

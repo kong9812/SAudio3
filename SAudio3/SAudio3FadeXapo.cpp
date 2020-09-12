@@ -140,6 +140,16 @@ void SAudio3FadeXapo::Process
 					outputBuf[i] = inputBuf[i] * volume;
 				}
 
+				// 無音処理
+				if ((tmpParameter->silentBeforeFade)&& (samplingCnt < fadeInStartSampling))
+				{
+					outputBuf[i] = 0.0f;
+				}
+				else if ((tmpParameter->silentAfterFade) && (samplingCnt > fadeOutEndSampling))
+				{
+						outputBuf[i] = 0.0f;
+				}
+
 				// サンプリングカウンター(処理位置)
 				samplingCnt++;
 				if (samplingCnt >= tmpParameter->allSampling)
