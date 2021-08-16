@@ -10,6 +10,9 @@
 #include <device_functions.h>
 #pragma comment(lib, "cudart_static.lib")
 
+// XAPO
+#include "SAudio3FadeXapo.h"
+
 //===================================================================================================================================
 // 定数定義
 //===================================================================================================================================
@@ -47,6 +50,21 @@ struct Compress_Data
 	float **data;				// 圧縮データ
 };
 
+struct Normalize_Data
+{
+	short *newData;
+	int newSampleRate;
+	long newSize;
+};
+
+struct Fade_Data
+{
+	int startTime;
+	int usedTime;
+	short *newData;
+	long newSize;
+};
+
 //===================================================================================================================================
 // プロトタイプ宣言
 //===================================================================================================================================
@@ -63,5 +81,11 @@ public:
 	Compress_Data compressor(short *_data, long _size, int channel);
 
 	// 正規化
-	short *normalizer(short *_data, long _size, int channel, int oldSampleRate, int newSampleRate);
+	Normalize_Data normalizer(short *_data, long _size, int channel, int oldSampleRate, int newSampleRate,float gain);
+
+	// フェイド
+	Fade_Data fade(Normalize_Data normalizeData, int channel, SAudio3FadeParameter fadeParameter);
+
+	// 合成(チャンネル数増やすこともできる！)
+	short *combine(float **inData, long sampingPerChannel, int oldChannel, int channel);
 };

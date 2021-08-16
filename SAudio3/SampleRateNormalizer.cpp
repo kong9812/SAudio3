@@ -13,8 +13,8 @@ short *SampleRateNormalizer::SetSampleRate(SoundResource *soundResource, int sam
 	CUDA_CALC *cudaCalc = new CUDA_CALC;
 
 	// [CUDA]³‹K‰»
-	cudaCalc->normalizer(soundResource->data, soundResource->size,soundResource->waveFormatEx.nChannels,
-		soundResource->waveFormatEx.nSamplesPerSec, sampleRate);
+	cudaCalc->normalizer(soundResource->data, soundResource->size, soundResource->waveFormatEx.nChannels,
+		soundResource->waveFormatEx.nSamplesPerSec, sampleRate, 2.0f);
 
 	// Œã•Ð•t‚¯
 	SAFE_DELETE(cudaCalc)

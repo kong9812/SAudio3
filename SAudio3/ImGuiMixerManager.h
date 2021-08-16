@@ -12,9 +12,16 @@
 //===================================================================================================================================
 struct Mixer_Resource
 {
-	//std::map <std::string, XAUDIO2_SEND_DESCRIPTOR>sendDescriptor;
 	std::string soundName;	// サウンド名
 	int cnt;				// 利用回数
+};
+
+struct COMBINE_SOUND_DATA
+{
+	int channel;
+	int sampingPerChannel;
+	float **data;
+	long finalSize;
 };
 
 struct Mixer_Parameter
@@ -28,6 +35,7 @@ struct Mixer_Parameter
 	float	playingPos;
 	int		maxSample;
 	int		maxMs;
+	COMBINE_SOUND_DATA combineSoundData;
 };
 
 struct Mixer_Data
@@ -52,10 +60,12 @@ public:
 	void MixerPanel(bool *showMixerPanael);
 
 private:
-	XAudio2Manager	*xAudio2Manager;// XAudio2マネジャー
-	TextureBase		*textureBase;	// テクスチャベース
-	SoundBase		*soundBase;		// サウンドベース
-	Mixer_Data		mixerData;		// ミクサーデータ
+	XAudio2Manager	*xAudio2Manager;		// XAudio2マネジャー
+	TextureBase		*textureBase;			// テクスチャベース
+	SoundBase		*soundBase;				// サウンドベース
+	Mixer_Data		mixerData;				// ミクサーデータ
+	bool			updataCombineSound;		// 合成サウンドの更新
+	short			*finalCombineSound;	// 合成サウンド
 
 	// ミクサーパラメーターの作成
 	Mixer_Parameter CreateMixerParameter(Mixer_Resource mixResourceData);
@@ -69,7 +79,9 @@ private:
 	// [パーツ]ミクサー
 	void MixerPartMixer(std::list<Mixer_Parameter>::iterator mixerParameter);
 
-	//// 送信ディスクリプタの作成・設置
-	//void SetSendDescriptor(std::string mixerParameterName,
-	//	std::list<Mixer_Resource>::iterator mixerResource, IXAudio2SubmixVoice *XAudio2SubmixVoice);
+	// サウンドの合成
+	void MixerCombine(void);
+
+	// サウンド合成(CUDA抜き)
+	void MixWithOutCUDA(Mixer_Parameter mixerParameter);
 };

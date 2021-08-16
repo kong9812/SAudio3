@@ -99,6 +99,130 @@ SoundBase::~SoundBase()
 	}
 }
 
+#define TEST (false)
+#if TEST
+const short StepSize[89] = {
+	7, 8, 9, 10, 11, 12, 13, 14, 16, 17,
+	19, 21, 23, 25, 28, 31, 34, 37, 41, 45,
+	50, 55, 60, 66, 73, 80, 88, 97, 107, 118,
+	130, 143, 157, 173, 190, 209, 230, 253, 279, 307,
+	337, 371, 408, 449, 494, 544, 598, 658, 724, 796,
+	876, 963, 1060, 1166, 1282, 1411, 1552, 1707, 1878, 2066,
+	2272, 2499, 2749, 3024, 3327, 3660, 4026, 4428, 4871, 5358,
+	5894, 6484, 7132, 7845, 8630, 9493, 10442, 11487, 12635, 13899,
+	15289, 16818, 18500, 20350, 22385, 24623, 27086, 29794, 32767
+};
+
+//***********************************************************************************************************************************
+// テスト
+//***********************************************************************************************************************************
+void test(short *data, long size, int channel)
+{
+	long newSize = 0;
+	short lastData = 0;
+
+	for (int i = 0; i < (size / (int)sizeof(short) / channel); i++)
+	{
+		for (int j = 0; j < channel; j++)
+		{
+			if (lastData >= data[i * channel + j])
+			{
+				// 結果
+				lastData = data[i * channel + j];
+			}
+			else
+			{
+				// 結果
+				lastData = data[i * channel + j];
+			}
+		}
+	}
+}
+
+//***********************************************************************************************************************************
+// 近い値 二分探索
+//***********************************************************************************************************************************
+char FindADPCMID(short d)
+{
+	char result = 0;
+
+	// 半分に分ける
+	if (d >= StepSize[44])
+	{
+		for (short i = 44; i <= 89; i++)
+		{
+			if (d == StepSize[i])
+			{
+				// 見つかった
+				return i;
+			}
+			else if (d > StepSize[i])
+			{
+				return i - 1;
+			}
+		}
+	}
+	else
+	{
+
+	}
+}
+#endif
+
+//===================================================================================================================================
+// 書き出し
+//===================================================================================================================================
+bool SoundBase::OutputSound(short *data, long size, int channel, long sampingPerSec, bool adpcm)
+{
+	// ファイル
+	FILE *fp = fopen("test.wav", "wb");
+
+	WAV_FILE wavFile = { NULL };
+	
+	// RIFF
+	memcpy(wavFile.riff.chunk, "RIFF", 4);
+	wavFile.riff.size = 36 + size;
+	memcpy(wavFile.riff.waveChunk, "WAVE", 4);
+	fwrite(&wavFile.riff, sizeof(RIFF_CHUNK), 1, fp);
+
+	// _fmt
+	memcpy(wavFile.fmt.chunk, "fmt ", 4);
+	wavFile.fmt.size = 16;
+	wavFile.fmt.formatTag = 1;
+	wavFile.fmt.channel = channel;
+	wavFile.fmt.sampleRate = sampingPerSec;
+	wavFile.fmt.bitPerSample = 16;
+	wavFile.fmt.avgBytesPerSec = (wavFile.fmt.sampleRate * wavFile.fmt.bitPerSample) / 4;
+	wavFile.fmt.blockAlign = wavFile.fmt.bitPerSample / 8;
+	fwrite(&wavFile.fmt, sizeof(FMT_CHUNK), 1, fp);
+
+	// data
+	memcpy(wavFile.data.chunk, "data", 4);
+	if (adpcm)
+	{
+#if TEST
+		test(data, size, channel);
+		wavFile.data.size = size;
+		fwrite(&wavFile.data, sizeof(DATA_CHUNK) - 4, 1, fp);
+		fwrite(data, size, 1, fp);
+#else
+		wavFile.data.size = size;
+		fwrite(&wavFile.data, sizeof(DATA_CHUNK) - 4, 1, fp);
+		fwrite(data, size, 1, fp);
+#endif
+	}
+	else
+	{
+		wavFile.data.size = size;
+		fwrite(&wavFile.data, sizeof(DATA_CHUNK) - 4, 1, fp);
+		fwrite(data, size, 1, fp);
+	}
+
+	fclose(fp);
+
+	return true;
+}
+
 //===================================================================================================================================
 // テクスチャローダー
 //===================================================================================================================================

@@ -86,6 +86,9 @@ public:
 	
 	std::map<std::string, SoundResource> soundResource;	// [連想配列]サウンドリソース
 
+	// 書き出し
+	bool OutputSound(short *data, long size, int channel, long sampingPerSec, bool adpcm = false);
+
 private:
 
 	// テクスチャローダー
