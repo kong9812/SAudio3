@@ -34,5 +34,5 @@ usedTime:(time)ms
 
 ■20210905(UTF-8 01:00)  
 更新内容:フィルター機能(XAPO)  
-※現状はベータ版
+※現状はベータ版  
 ![ADD_XAPO_FILTER](https://user-images.githubusercontent.com/48704407/132100765-685ce232-ce78-463a-b3c9-3c6dacd4677b.png "20210905_1")
