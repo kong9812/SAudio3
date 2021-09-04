@@ -407,6 +407,89 @@ void ImGuiManager::SoundBasePanel()
 			bool oldIsMix = i->second.isMix;
 			ImGui::PushID(i->first.c_str());
 			ImGui::Checkbox("Mix", &i->second.isMix);
+
+#if SAUDIO3_TEST_VER
+			if (ImGui::Button("[TEST]Filter"))
+			{
+				ImGui::OpenPopup("TEST window");
+
+				IXAudio2SourceVoice *sourceVoice = xAudio2Manager->GetSourceVoice(i->first.data());
+				XAUDIO2_EFFECT_DESCRIPTOR	effectDescriptor = { NULL };	// エフェクトディスクリプタ
+				XAUDIO2_EFFECT_CHAIN		chain = { NULL };				// エフェクトチェン
+				XAUDIO2_VOICE_DETAILS		voiceDetails = { NULL };		// ボイス詳細
+				sourceVoice->GetVoiceDetails(&voiceDetails);				// ボイス詳細の取得
+
+				// XAPOs
+				IUnknown *XApo = (IXAPO *)new SAudio3FilterXapo();
+
+				// エフェクトディスクリプタの初期化
+				effectDescriptor.pEffect = XApo;
+				effectDescriptor.InitialState = true;
+				effectDescriptor.OutputChannels = voiceDetails.InputChannels;
+
+				// エフェクトチェンの初期化
+				chain.EffectCount = 1;
+				chain.pEffectDescriptors = &effectDescriptor;
+
+				// ソースボイスとの接続
+				sourceVoice->SetEffectChain(&chain);
+
+				// パラメーター
+				SAudio3FilterParameter filterParameter;
+				filterParameter.type = XAPO_FILTER_TYPE::XFT_LowpassFilter;
+				filterParameter.Q = 0.5f;
+				filterParameter.cutoffFreq = (voiceDetails.InputSampleRate / 2) / 2;
+				filterParameter.bandwidth = 1.f;
+
+				sourceVoice->SetEffectParameters(0, &filterParameter, sizeof(SAudio3FilterParameter));
+
+				sourceVoice->Start();
+
+				// すぐぽい！(たぶん大丈夫…確認待ち)
+				SAFE_RELEASE(XApo);
+			}
+
+			ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+			ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+			if (ImGui::BeginPopupModal("TEST window", NULL, ImGuiWindowFlags_::ImGuiWindowFlags_AlwaysAutoResize))
+			{
+				ImGui::Text("[TEST]Filter");
+				
+				IXAudio2SourceVoice *sourceVoice = xAudio2Manager->GetSourceVoice(i->first.data());
+				
+				XAUDIO2_VOICE_DETAILS		voiceDetails = { NULL };		// ボイス詳細
+				sourceVoice->GetVoiceDetails(&voiceDetails);				// ボイス詳細の取得
+
+				// パラメーター
+				SAudio3FilterParameter filterParameter;
+				sourceVoice->GetEffectParameters(0, &filterParameter, sizeof(SAudio3FilterParameter));
+				SAudio3FilterParameter newFilterParameter = filterParameter;
+
+				ImGui::Text("Name: %s", i->first.data());
+				ImGui::Text("0:Lowpass  1:Highpass  2:Bandpass  3:Notch");
+				ImGui::SliderInt("Type", (int *)&newFilterParameter.type, 0, 3);
+				ImGui::SliderInt("Cutoff Freq.", &newFilterParameter.cutoffFreq, 1, (voiceDetails.InputSampleRate / 2));
+				ImGui::SliderFloat("Q", &newFilterParameter.Q, .1f, 5.f);
+				ImGui::SliderFloat("Bandwidth", &newFilterParameter.bandwidth, .1f, 5.f);
+
+				if ((newFilterParameter.type != filterParameter.type) ||
+					(newFilterParameter.cutoffFreq != filterParameter.cutoffFreq) ||
+					(newFilterParameter.Q != filterParameter.Q) ||
+					(newFilterParameter.bandwidth != filterParameter.bandwidth))
+				{
+					sourceVoice->SetEffectParameters(0, &newFilterParameter, sizeof(SAudio3FilterParameter));
+				}
+
+				if (ImGui::Button("Close"))
+				{
+					sourceVoice->SetEffectChain(NULL);
+					ImGui::CloseCurrentPopup();
+				}
+				ImGui::EndPopup();
+			}
+#endif
+
 			ImGui::PopID();
 			ImGui::SameLine();
 			if (oldIsMix != i->second.isMix)

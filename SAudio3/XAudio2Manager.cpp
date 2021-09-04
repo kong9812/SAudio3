@@ -365,3 +365,13 @@ HRESULT XAudio2Manager::SetXapoFade(IXAudio2SourceVoice *sourceVoice)
 {
 	return xAudio2EffectManager->SetXapoFade(sourceVoice);
 }
+
+#if SAUDIO3_TEST_VER
+//===================================================================================================================================
+// ソースボイスの取得
+//===================================================================================================================================
+IXAudio2SourceVoice *XAudio2Manager::GetSourceVoice(std::string voiceName)
+{
+	return voiceResource[voiceName].sourceVoice;
+}
+#endif

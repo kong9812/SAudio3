@@ -55,7 +55,7 @@ void ImGuiPlotManager::PlotCompressWave(std::string soundName, SoundResource *so
 			conf.values.count = tmpConversionData->sampingPerChannel;
 			conf.values.ys_list = (const float **)&tmpConversionData->data[i]; // use ys_list to draw several lines simultaneously
 			conf.values.ys_count = 1;
-			conf.values.colors = (const ImU32*)&ImColor(0, 255, 0);
+			conf.values.colors = (const ImU32*)&ImColor(IM_COL32_BLACK);
 
 			conf.scale.min = -1;
 			conf.scale.max = 1;

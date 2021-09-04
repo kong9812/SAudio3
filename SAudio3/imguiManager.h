@@ -10,6 +10,10 @@
 #include "ImGuiPlotManager.h"
 #include "ImGuiMixerManager.h"
 
+#if SAUDIO3_TEST_VER
+#include "SAudio3FilterXapo.h"
+#endif
+
 //===================================================================================================================================
 // ビルドスイッチ
 //===================================================================================================================================
@@ -87,6 +91,7 @@ private:
 	ImGuiPlotManager	*imGuiPlotManager;	// [ImGui]プロットマネージャー
 	ImGuiMixerManager	*imGuiMixerManager;	// [ImGui]ミクサーマネージャー
 
+	bool showTestPopup;
 	bool showImDemo;					// [ImPlot・ImGui]デモ画面
 	bool showMainPanel;					// [ImGuiフラグ]メインパネル
 	bool showPlayerPanel;				// [ImGuiフラグ]再生パネル

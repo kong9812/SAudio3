@@ -83,6 +83,12 @@
     <Filter Include="ソース ファイル\ImGui\ImGui-Plot">
       <UniqueIdentifier>{1cd8aabb-dcaa-4dff-abc4-f3001b968c41}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\SoundCore\XAudio2\XAPO\Fade">
+      <UniqueIdentifier>{c4f33086-fc74-4d68-bb93-ecf47df9de8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\SoundCore\XAudio2\XAPO\Filter">
+      <UniqueIdentifier>{e8faf6bf-0021-4384-a26e-80accaa97794}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Directx11.h">
@@ -175,9 +181,6 @@
     <ClInclude Include="XAudio2EffectManager.h">
       <Filter>ソース ファイル\SoundCore\XAudio2\XAudio2EffectManager</Filter>
     </ClInclude>
-    <ClInclude Include="SAudio3FadeXapo.h">
-      <Filter>ソース ファイル\SoundCore\XAudio2\XAPO</Filter>
-    </ClInclude>
     <ClInclude Include="ImGui\docking\implot.h">
       <Filter>ソース ファイル\ImGui\ImPlot</Filter>
     </ClInclude>
@@ -186,6 +189,12 @@
     </ClInclude>
     <ClInclude Include="ImGui\docking\imgui_plot.h">
       <Filter>ソース ファイル\ImGui\ImGui-Plot</Filter>
+    </ClInclude>
+    <ClInclude Include="SAudio3FadeXapo.h">
+      <Filter>ソース ファイル\SoundCore\XAudio2\XAPO\Fade</Filter>
+    </ClInclude>
+    <ClInclude Include="SAudio3FilterXapo.h">
+      <Filter>ソース ファイル\SoundCore\XAudio2\XAPO\Filter</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -261,9 +270,6 @@
     <ClCompile Include="XAudio2EffectManager.cpp">
       <Filter>ソース ファイル\SoundCore\XAudio2\XAudio2EffectManager</Filter>
     </ClCompile>
-    <ClCompile Include="SAudio3FadeXapo.cpp">
-      <Filter>ソース ファイル\SoundCore\XAudio2\XAPO</Filter>
-    </ClCompile>
     <ClCompile Include="ImGui\docking\implot_demo.cpp">
       <Filter>ソース ファイル\ImGui\ImPlot</Filter>
     </ClCompile>
@@ -275,6 +281,12 @@
     </ClCompile>
     <ClCompile Include="ImGui\docking\imgui_plot.cpp">
       <Filter>ソース ファイル\ImGui\ImGui-Plot</Filter>
+    </ClCompile>
+    <ClCompile Include="SAudio3FadeXapo.cpp">
+      <Filter>ソース ファイル\SoundCore\XAudio2\XAPO\Fade</Filter>
+    </ClCompile>
+    <ClCompile Include="SAudio3FilterXapo.cpp">
+      <Filter>ソース ファイル\SoundCore\XAudio2\XAPO\Filter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

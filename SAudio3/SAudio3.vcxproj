@@ -22,19 +22,19 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{7BC9A35D-E3F7-49FA-9275-B8737EB61120}</ProjectGuid>
     <RootNamespace>SAudio3</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -47,7 +47,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -166,6 +166,7 @@
     <ClCompile Include="AppProc.cpp" />
     <ClCompile Include="SampleRateNormalizer.cpp" />
     <ClCompile Include="SAudio3FadeXapo.cpp" />
+    <ClCompile Include="SAudio3FilterXapo.cpp" />
     <ClCompile Include="SoundBase.cpp" />
     <ClCompile Include="ImGuiPlotManager.cpp" />
     <ClCompile Include="XAudio2EffectManager.cpp" />
@@ -187,6 +188,7 @@
     <ClInclude Include="ImGui\docking\implot_internal.h" />
     <ClInclude Include="SampleRateNormalizer.h" />
     <ClInclude Include="SAudio3FadeXapo.h" />
+    <ClInclude Include="SAudio3FilterXapo.h" />
     <ClInclude Include="SoundBase.h" />
     <ClInclude Include="XAudio2EffectManager.h" />
     <ClInclude Include="XAudio2Manager.h" />

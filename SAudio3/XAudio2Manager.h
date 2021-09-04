@@ -91,6 +91,12 @@ public:
 	// エフェクトの設置・解除
 	HRESULT SetXapoFade(IXAudio2SourceVoice *sourceVoice);
 
+	// テスト機能！！！
+#if SAUDIO3_TEST_VER
+	// ソースボイスの取得
+	IXAudio2SourceVoice *GetSourceVoice(std::string voiceName);
+#endif
+
 private:
 	SoundBase				*soundBase;							// サウンドベース
 
