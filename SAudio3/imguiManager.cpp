@@ -413,6 +413,12 @@ void ImGuiManager::SoundBasePanel()
 			{
 				ImGui::OpenPopup("TEST window");
 
+				if (!xAudio2Manager->GetIsPlaying(i->first.data()))
+				{
+					// 再生・一時停止
+					xAudio2Manager->PlayPauseSourceVoice(nullptr, i->first.data());
+				}
+
 				IXAudio2SourceVoice *sourceVoice = xAudio2Manager->GetSourceVoice(i->first.data());
 				XAUDIO2_EFFECT_DESCRIPTOR	effectDescriptor = { NULL };	// エフェクトディスクリプタ
 				XAUDIO2_EFFECT_CHAIN		chain = { NULL };				// エフェクトチェン
@@ -447,6 +453,13 @@ void ImGuiManager::SoundBasePanel()
 
 				// すぐぽい！(たぶん大丈夫…確認待ち)
 				SAFE_RELEASE(XApo);
+
+				lastFrameSample = 0;
+				lastFramePlayedSamples = 0;
+				writePos = 0;
+				inL = new kiss_fft_cpx[i->second.waveFormatEx.nSamplesPerSec];
+				out = new kiss_fft_cpx[i->second.waveFormatEx.nSamplesPerSec];
+				FFT_R = new float[i->second.waveFormatEx.nSamplesPerSec];
 			}
 
 			ImVec2 center = ImGui::GetMainViewport()->GetCenter();
@@ -455,18 +468,18 @@ void ImGuiManager::SoundBasePanel()
 			if (ImGui::BeginPopupModal("TEST window", NULL, ImGuiWindowFlags_::ImGuiWindowFlags_AlwaysAutoResize))
 			{
 				ImGui::Text("[TEST]Filter");
-				
-				IXAudio2SourceVoice *sourceVoice = xAudio2Manager->GetSourceVoice(i->first.data());
-				
-				XAUDIO2_VOICE_DETAILS		voiceDetails = { NULL };		// ボイス詳細
-				sourceVoice->GetVoiceDetails(&voiceDetails);				// ボイス詳細の取得
+				const char *name = i->first.data();
+
+				IXAudio2SourceVoice *sourceVoice = xAudio2Manager->GetSourceVoice(name);
+				XAUDIO2_VOICE_STATE voiceState = xAudio2Manager->GetVoiceState(name);
+				XAUDIO2_VOICE_DETAILS voiceDetails = xAudio2Manager->GetVoiceDetails(name);
 
 				// パラメーター
 				SAudio3FilterParameter filterParameter;
 				sourceVoice->GetEffectParameters(0, &filterParameter, sizeof(SAudio3FilterParameter));
 				SAudio3FilterParameter newFilterParameter = filterParameter;
 
-				ImGui::Text("Name: %s", i->first.data());
+				ImGui::Text("Name: %s", name);
 				ImGui::Text("0:Lowpass  1:Highpass  2:Bandpass  3:Notch");
 				ImGui::SliderInt("Type", (int *)&newFilterParameter.type, 0, 3);
 				ImGui::SliderInt("Cutoff Freq.", &newFilterParameter.cutoffFreq, 1, (voiceDetails.InputSampleRate / 2));
@@ -481,8 +494,57 @@ void ImGuiManager::SoundBasePanel()
 					sourceVoice->SetEffectParameters(0, &newFilterParameter, sizeof(SAudio3FilterParameter));
 				}
 
+				ImGui::Spacing();
+				ImGui::Text(u8"[TEST]FFT");
+
+				long currentSample = voiceState.SamplesPlayed;
+				ImGui::Text("Samples pre frame: %d", lastFramePlayedSamples);
+
+				if ((currentSample - lastFrameSample) != 0)
+				{
+					lastFramePlayedSamples = currentSample - lastFrameSample;					
+
+					Conversion_Data conversionData = imGuiPlotManager->GetConversionData(name);
+
+					int size = i->second.size / sizeof(short) / i->second.waveFormatEx.nChannels;
+					int readPos = currentSample;
+					int startPos = (readPos - i->second.waveFormatEx.nSamplesPerSec) % size;
+					if (startPos < 0)
+					{
+						startPos = 0;
+					}
+
+					for (int j = 0; j < i->second.waveFormatEx.nSamplesPerSec; j++)
+					{
+						if ((startPos + j) <= readPos)
+						{
+							inL[j].r = conversionData.data[0][(startPos + j) % size];
+						}
+						else
+						{
+							inL[j].r = 0;
+						}
+						inL[j].i = 0;
+					}
+
+					FFT::FFTProcess(i->second.waveFormatEx.nSamplesPerSec, inL, out);
+
+					for (int j = 0; j < i->second.waveFormatEx.nSamplesPerSec; j++)
+					{
+						FFT_R[j] = out[j].r > 1 ? out[j].r : 0;
+					}
+				}
+
+				ImVec2 plotextent(1500, 100);
+				ImGui::PlotHistogram("", FFT_R, i->second.waveFormatEx.nSamplesPerSec / 2, 0, "", 0, FLT_MAX, plotextent);
+
+				lastFrameSample = currentSample;
+
 				if (ImGui::Button("Close"))
 				{
+					SAFE_DELETE_ARRAY(inL);
+					SAFE_DELETE_ARRAY(out);
+					SAFE_DELETE_ARRAY(FFT_R);
 					sourceVoice->SetEffectChain(NULL);
 					ImGui::CloseCurrentPopup();
 				}

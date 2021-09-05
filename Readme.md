@@ -36,3 +36,8 @@ usedTime:(time)ms
 更新内容:フィルター機能(XAPO)  
 ※現状はベータ版  
 ![ADD_XAPO_FILTER](https://user-images.githubusercontent.com/48704407/132100765-685ce232-ce78-463a-b3c9-3c6dacd4677b.png "20210905_1")
+
+■20210906(UTF-8 22:40)  
+更新内容:FFT  
+※現状はベータ版  
+![FFT](https://user-images.githubusercontent.com/48704407/132128793-10cc30b9-8d0a-4668-b362-0a4c4a660e09.PNG "20210906_1")  

@@ -21,6 +21,10 @@ public:
 	// データカウンターリセット
 	//void ResetDataCnt(void) { dataCnt = imGuiPlotManagerNS::dataLoadInOneFrame; }
 
+#if SAUDIO3_TEST_VER
+	Conversion_Data GetConversionData(std::string soundName) { return conversionData[soundName]; }
+#endif
+
 private:
 	CUDA_CALC *cudaCalc;
 	int dataCnt;										// 残り処理できるデータ量

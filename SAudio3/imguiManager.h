@@ -12,6 +12,7 @@
 
 #if SAUDIO3_TEST_VER
 #include "SAudio3FilterXapo.h"
+#include "FFT.h"
 #endif
 
 //===================================================================================================================================
@@ -45,6 +46,11 @@ namespace imGuiManagerNS
 	const ImVec2 buttonSize = ImVec2(25, 25);
 	const float masteringVoiceVolumeSliderWidth = 400;
 	const ImVec2 soundBasePanelProgressBarSize = ImVec2(-1.0f, 5.0f);
+#if SAUDIO3_TEST_VER
+	const int startHz = 20;
+	const int FFTBarCnt = 9;
+	const int fftHz[FFTBarCnt] = { 50,100,200,500,1000,2000,5000,10000,30000 };
+#endif
 }
 
 //===================================================================================================================================
@@ -102,7 +108,15 @@ private:
 
 	Performance_Record performanceRecord;	// パフォーマンス記録
 
-	// [ImGui]リサイズ
+#if SAUDIO3_TEST_VER
+	int lastFramePlayedSamples;			// 前フレーム～現フレーム 再生したサンプル数
+	long lastFrameSample;				// 前フレームに記録した位置
+	int writePos;
+	kiss_fft_cpx *inL;
+	kiss_fft_cpx *out;
+	float *FFT_R;
+#endif
+											// [ImGui]リサイズ
 	void ReSize(LONG right, LONG bottom);
 
 	// メインパネル

@@ -89,6 +89,12 @@
     <Filter Include="ソース ファイル\SoundCore\XAudio2\XAPO\Filter">
       <UniqueIdentifier>{e8faf6bf-0021-4384-a26e-80accaa97794}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\FFT">
+      <UniqueIdentifier>{a5f73bcf-7d13-4307-8ad6-020bdf09c46a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\FFT\KISSFFT">
+      <UniqueIdentifier>{9461d9ea-b8ef-4061-98f9-2c2d8705ffa7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Directx11.h">
@@ -196,6 +202,15 @@
     <ClInclude Include="SAudio3FilterXapo.h">
       <Filter>ソース ファイル\SoundCore\XAudio2\XAPO\Filter</Filter>
     </ClInclude>
+    <ClInclude Include="FFT.h">
+      <Filter>ソース ファイル\FFT</Filter>
+    </ClInclude>
+    <ClInclude Include="kissFFT\kiss_fft.h">
+      <Filter>ソース ファイル\FFT\KISSFFT</Filter>
+    </ClInclude>
+    <ClInclude Include="kissFFT\_kiss_fft_guts.h">
+      <Filter>ソース ファイル\FFT\KISSFFT</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Directx11.cpp">
@@ -287,6 +302,12 @@
     </ClCompile>
     <ClCompile Include="SAudio3FilterXapo.cpp">
       <Filter>ソース ファイル\SoundCore\XAudio2\XAPO\Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="FFT.cpp">
+      <Filter>ソース ファイル\FFT</Filter>
+    </ClCompile>
+    <ClCompile Include="kissFFT\kiss_fft.c">
+      <Filter>ソース ファイル\FFT\KISSFFT</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

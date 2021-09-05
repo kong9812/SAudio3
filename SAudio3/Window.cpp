@@ -105,6 +105,8 @@ HRESULT Window::Init(HINSTANCE hInstance)
 
 	if (!hWnd[WINDOWS_ID::MAIN_WINDOWS] || !hWnd[WINDOWS_ID::SUB_WINDOWS])
 		return FALSE;
+
+	return TRUE;
 }
 
 //===================================================================================================================================
